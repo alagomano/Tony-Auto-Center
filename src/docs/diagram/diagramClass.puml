@@ -1,0 +1,60 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+
+enum OrderStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_PARTS
+  FINISHED
+  DELIVERED
+}
+
+class Client {
+  - Long id
+  - String name
+  - String phone
+  - String email
+  + addVehicle(vehicle: Vehicle): void
+  + getVehicles(): List<Vehicle>
+}
+
+class Vehicle {
+  - Long id
+  - String plate
+  - String brand
+  - String model
+  - Integer year
+  - Integer mileage
+  + openServiceOrder(desc: String): ServiceOrder
+  + getHistory(): List<ServiceOrder>
+}
+
+class ServiceOrder {
+  - Long id
+  - LocalDate entryDate
+  - LocalDate exitDate
+  - String problemDescription
+  - String observations
+  - OrderStatus status
+  - BigDecimal totalValue
+  + addServiceItem(item: ServiceItem): void
+  + calculateTotal(): BigDecimal
+  + updateStatus(status: OrderStatus): void
+  + close(exitDate: LocalDate): void
+}
+
+class ServiceItem {
+  - Long id
+  - String description
+  - Integer quantity
+  - BigDecimal unitValue
+  + getSubtotal(): BigDecimal
+}
+
+Client       "1" o-- "0..*" Vehicle      : possui
+Vehicle      "1" o-- "0..*" ServiceOrder : gera
+ServiceOrder "1" *-- "1..*" ServiceItem  : contém
+ServiceOrder  --> OrderStatus             : usa
+
+@enduml

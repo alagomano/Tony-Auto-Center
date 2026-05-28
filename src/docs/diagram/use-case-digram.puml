@@ -1,0 +1,59 @@
+@startuml
+
+left to right direction
+skinparam actorStyle awesome
+
+actor "Proprietário" as P
+
+rectangle "Tony Auto Center" {
+
+  package "Gestão de Clientes" {
+    usecase "Cadastrar Cliente" as UC01
+    usecase "Editar Cliente" as UC02
+    usecase "Listar Clientes" as UC03
+  }
+
+  package "Gestão de Veículos" {
+    usecase "Cadastrar Veículo" as UC04
+    usecase "Editar Veículo" as UC05
+    usecase "Buscar Veículo por Placa" as UC06
+  }
+
+  package "Ordem de Serviço" {
+    usecase "Abrir Ordem de Serviço" as UC07
+    usecase "Atualizar Status da OS" as UC08
+    usecase "Adicionar Serviço" as UC09
+    usecase "Fechar Ordem de Serviço" as UC10
+    usecase "Calcular Valor Total" as UC11
+  }
+
+  package "Histórico" {
+    usecase "Consultar Histórico do Veículo" as UC12
+    usecase "Listar OS por Status" as UC13
+  }
+
+}
+
+P --> UC01
+P --> UC02
+P --> UC03
+
+P --> UC04
+P --> UC05
+P --> UC06
+
+P --> UC07
+P --> UC08
+P --> UC09
+P --> UC10
+
+P --> UC12
+P --> UC13
+
+
+UC09 .> UC11 : <<include>>
+UC10 .> UC11 : <<include>>
+UC10 .> UC08 : <<include>>
+UC12 .> UC06 : <<include>>
+
+@enduml
