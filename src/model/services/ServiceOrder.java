@@ -21,6 +21,11 @@ public class ServiceOrder {
     private List<ServiceItem> items = new ArrayList<>();
 
 
+    public ServiceOrder(){
+
+    }
+
+
     public ServiceOrder(String problemDescription, String observations){
         this.problemDescription = problemDescription;
         this.observations = observations;
@@ -28,6 +33,24 @@ public class ServiceOrder {
         this.status = OrderStatus.OPEN;
         this.totalValue = BigDecimal.ZERO;
     }
+
+
+    public String getProblemDescription() {
+        return problemDescription;
+    }
+
+    public void setProblemDescription(String problemDescription) {
+        this.problemDescription = problemDescription;
+    }
+
+    public LocalDateTime getEntryDate() {
+        return entryDate;
+    }
+
+    public void setEntryDate(LocalDateTime entryDate) {
+        this.entryDate = entryDate;
+    }
+
 
 
     public void addService(ServiceItem item){
