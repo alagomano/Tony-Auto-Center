@@ -106,6 +106,18 @@ public class ServiceOrder {
 
     }
 
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        for(ServiceItem i : items){
+            sb.append(i.toString() + "\n");
+        }
+        sb.append("Total a pagar: R$ " + this.calculateTotal());
+
+        return sb.toString();
+
+    }
+
 
 
 }

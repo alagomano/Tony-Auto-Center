@@ -20,4 +20,10 @@ public class ServiceItem {
                 BigDecimal.valueOf(quantity)
         );
     }
+
+
+    @Override
+    public String toString(){
+        return description + " | " + quantity + " | " + unitValue + " | " + "SubTotal " + getSubtotal();
+    }
 }
