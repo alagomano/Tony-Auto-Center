@@ -1,10 +1,7 @@
 package model.entities;
 
 import model.exception.ServiceException;
-import model.services.ServiceItem;
-import model.services.ServiceOrder;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +24,9 @@ public class Vehicle {
         this.mileage = mileage;
     }
 
+    public String getPlate(){
+        return plate;
+    }
 
     private void addServiceOrder(ServiceOrder order){
         if(order == null){

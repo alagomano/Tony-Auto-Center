@@ -1,60 +1,189 @@
-@startuml
+@startuml diagramClass
+
 skinparam classAttributeIconSize 0
 skinparam classFontStyle bold
-
-enum OrderStatus {
-  OPEN
-  IN_PROGRESS
-  WAITING_PARTS
-  FINISHED
-  DELIVERED
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor #2E75B6
+    ArrowColor #2E75B6
+}
+skinparam note {
+    BackgroundColor #FFF3CD
+    BorderColor #C9A227
 }
 
-class Client {
-  - Long id
-  - String name
-  - String phone
-  - String email
-  + addVehicle(vehicle: Vehicle): void
-  + getVehicles(): List<Vehicle>
+title Tony Auto Center — Diagrama de Classes (Etapa 2 — Java Puro)
+
+package "model.enums" {
+  enum OrderStatus {
+    OPEN
+    IN_PROGRESS
+    WAITING_PARTS
+    FINISHED
+    DELIVERED
+  }
 }
 
-class Vehicle {
-  - Long id
-  - String plate
-  - String brand
-  - String model
-  - Integer year
-  - Integer mileage
-  + openServiceOrder(desc: String): ServiceOrder
-  + getHistory(): List<ServiceOrder>
+package "model.exception" {
+  class ServiceException {
+    + ServiceException(msg: String)
+  }
 }
 
-class ServiceOrder {
-  - Long id
-  - LocalDate entryDate
-  - LocalDate exitDate
-  - String problemDescription
-  - String observations
-  - OrderStatus status
-  - BigDecimal totalValue
-  + addServiceItem(item: ServiceItem): void
-  + calculateTotal(): BigDecimal
-  + updateStatus(status: OrderStatus): void
-  + close(exitDate: LocalDate): void
+package "model.entities" {
+
+  class Client {
+    - id: Long
+    - name: String
+    - cpf: String
+    - phone: String
+    - address: String
+    - vehicles: Map<String, Vehicle>
+    --
+    + Client(name, cpf, phone, address)
+    + getCpf(): String
+    + addVehicle(vehicle: Vehicle): void
+    + getVehicle(plate: String): Vehicle
+    + getVehicles(): Collection<Vehicle>
+    + removeVehicle(plate: String): void
+    + toString(): String
+    __PENDENTE__
+    + getId(): Long
+    + getName(): String
+    + getPhone(): String
+    + getAddress(): String
+    « campo email decidido mas ainda
+      não incluído na classe »
+  }
+
+  class Vehicle {
+    - id: Long
+    - plate: String
+    - brand: String
+    - model: String
+    - year: Integer
+    - mileage: Integer
+    - serviceOrders: List<ServiceOrder>
+    --
+    + Vehicle(plate, brand, model, year, mileage)
+    + getPlate(): String
+    + openServiceOrder(problemDescription, observation): ServiceOrder
+    + getHistory(): List<ServiceOrder>
+    - addServiceOrder(order: ServiceOrder): void
+    __PENDENTE__
+    + getId(): Long
+    + getBrand(): String
+    + getModel(): String
+    + getYear(): Integer
+    + getMileage(): Integer
+    - client: Client  <color:#C9A227>« back-reference »</color>
+  }
+
+  class ServiceOrder {
+    - id: Long
+    - entryDate: LocalDateTime
+    - exitDate: LocalDateTime
+    - problemDescription: String
+    - observations: String
+    - status: OrderStatus
+    - totalValue: BigDecimal
+    - items: List<ServiceItem>
+    --
+    + ServiceOrder()
+    + ServiceOrder(problemDescription, observations)
+    + getProblemDescription(): String
+    + setProblemDescription(String): void
+    + getEntryDate(): LocalDateTime
+    + setEntryDate(LocalDateTime): void
+    + getStatus(): OrderStatus
+    + addService(item: ServiceItem): void
+    + calculateTotal(): BigDecimal
+    + update(status: OrderStatus): void
+    + close(): void
+    + toString(): String
+    __PENDENTE__
+    + getTotalValue(): BigDecimal
+    + getExitDate(): LocalDateTime
+    + getObservations(): String
+    + getItems(): List<ServiceItem>
+    - vehicle: Vehicle  <color:#C9A227>« back-reference »</color>
+  }
+
+  class ServiceItem {
+    - id: Long
+    - description: String
+    - quantity: Integer
+    - unitValue: BigDecimal
+    --
+    + ServiceItem(description, quantity, unitValue)
+    + getSubtotal(): BigDecimal
+    + toString(): String
+    __PENDENTE__
+    + getId(): Long
+    + getDescription(): String
+    + getQuantity(): Integer
+    + getUnitValue(): BigDecimal
+    « validar quantity > 0 e unitValue >= 0 »
+  }
 }
 
-class ServiceItem {
-  - Long id
-  - String description
-  - Integer quantity
-  - BigDecimal unitValue
-  + getSubtotal(): BigDecimal
+package "model.services" {
+
+  class ClientService {
+    - clients: Map<String, Client>
+    --
+    + registerClient(client: Client): void
+    + findClient(cpf: String): Client
+    + removeClient(client: Client): void
+    + getClients(): Collection<Client>
+  }
+
+  class VehicleService {
+    - clientService: ClientService
+    --
+    + VehicleService(clientService: ClientService)
+    + registerVehicle(cpf: String, vehicle: Vehicle): void
+    + findVehicle(cpf: String, plate: String): Vehicle
+    + openServiceOrder(cpf, plate, description, observation): ServiceOrder
+    __VALIDAÇÃO IMPLEMENTADA__
+    « RN-08: bloqueia nova OS se já
+      existir uma ativa (OPEN ou
+      IN_PROGRESS) »
+  }
 }
 
-Client       "1" o-- "0..*" Vehicle      : possui
-Vehicle      "1" o-- "0..*" ServiceOrder : gera
-ServiceOrder "1" *-- "1..*" ServiceItem  : contém
-ServiceOrder  --> OrderStatus             : usa
+package "application" {
+  class Main {
+    + main(args: String[]): void
+  }
+  note right of Main
+    Classe de teste manual —
+    exercita os 15 cenários do
+    fluxo completo (cadastro,
+    duplicidade, OS, status,
+    exceções).
+  end note
+}
+
+' ── Relacionamentos ──────────────────────────────────────
+Client        "1" o-- "0..*" Vehicle       : possui >
+Vehicle       "1" o-- "0..*" ServiceOrder   : gera >
+ServiceOrder  "1" *-- "1..*" ServiceItem    : contém >
+ServiceOrder  --> OrderStatus               : usa >
+
+VehicleService --> ClientService : depende de >
+ClientService  ..> Client        : gerencia >
+VehicleService ..> Vehicle       : consulta via Client >
+
+Main ..> ClientService  : usa
+Main ..> VehicleService : usa
+
+ServiceException <.. Client        : lança
+ServiceException <.. Vehicle       : lança
+ServiceException <.. ServiceOrder  : lança
+ServiceException <.. ClientService : lança
+ServiceException <.. VehicleService: lança
 
 @enduml

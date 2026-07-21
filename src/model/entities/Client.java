@@ -37,6 +37,10 @@ public class Client {
         vehicles.put(vehicle.getPlate(), vehicle);
     }
 
+    public Vehicle getVehicle(String plate){
+        return vehicles.get(plate);
+    }
+
     public Collection<Vehicle> getVehicles(){
         return new ArrayList<>(vehicles.values());
     }

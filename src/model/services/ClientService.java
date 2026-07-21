@@ -20,7 +20,7 @@ public class ClientService {
         clients.put(client.getCpf(), client);
     }
 
-    public Client fundClients(String cpf){
+    public Client findClient(String cpf){
         Client client = clients.get(cpf);
         if(client == null){
             throw new ServiceException("Cliente não encontrado");

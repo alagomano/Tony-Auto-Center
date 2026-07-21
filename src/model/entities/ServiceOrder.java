@@ -50,6 +50,10 @@ public class ServiceOrder {
         this.entryDate = entryDate;
     }
 
+    public OrderStatus getStatus(){
+        return status;
+    }
+
 
 
     public void addService(ServiceItem item){
