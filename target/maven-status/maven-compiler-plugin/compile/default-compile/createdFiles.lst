@@ -1,0 +1,9 @@
+model/services/VehicleService.class
+model/entities/ServiceOrder.class
+model/entities/Vehicle.class
+model/exception/ServiceException.class
+application/Main.class
+model/enums/OrderStatus.class
+model/entities/ServiceItem.class
+model/entities/Client.class
+model/services/ClientService.class

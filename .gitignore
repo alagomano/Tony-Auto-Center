@@ -9,6 +9,9 @@ out/
 README.md
 src/docs/diagram/diagramClass.puml
 
+# Database configuration
+src/main/resources/db.properties
+
 ### Eclipse ###
 .apt_generated
 .classpath

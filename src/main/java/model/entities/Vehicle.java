@@ -11,17 +11,15 @@ public class Vehicle {
     private String brand;
     private String model;
     private Integer year;
-    private Integer mileage;
 
 
     private List<ServiceOrder> serviceOrders = new ArrayList<>();
 
-    public Vehicle(String plate, String brand, String model, Integer year, Integer mileage) {
+    public Vehicle(String plate, String brand, String model, Integer year) {
         this.plate = plate;
         this.brand = brand;
         this.model = model;
         this.year = year;
-        this.mileage = mileage;
     }
 
     public String getPlate(){

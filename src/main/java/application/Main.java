@@ -1,3 +1,5 @@
+package application;
+
 import model.entities.Client;
 import model.entities.ServiceItem;
 import model.entities.ServiceOrder;
@@ -47,8 +49,7 @@ public class Main {
                 "ABC1D23",
                 "Honda",
                 "Civic",
-                2020,
-                50000
+                2020
         );
 
         vehicleService.registerVehicle(
