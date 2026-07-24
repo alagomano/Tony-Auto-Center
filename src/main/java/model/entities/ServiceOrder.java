@@ -34,12 +34,12 @@ public class ServiceOrder {
     }
 
 
-    public String getProblemDescription() {
-        return problemDescription;
+    public Long getId() {
+        return id;
     }
 
-    public void setProblemDescription(String problemDescription) {
-        this.problemDescription = problemDescription;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDateTime getEntryDate() {
@@ -50,11 +50,53 @@ public class ServiceOrder {
         this.entryDate = entryDate;
     }
 
-    public OrderStatus getStatus(){
+    public LocalDateTime getExitDate() {
+        return exitDate;
+    }
+
+    public void setExitDate(LocalDateTime exitDate) {
+        this.exitDate = exitDate;
+    }
+
+    public String getProblemDescription() {
+        return problemDescription;
+    }
+
+    public void setProblemDescription(String problemDescription) {
+        this.problemDescription = problemDescription;
+    }
+
+    public String getObservations() {
+        return observations;
+    }
+
+    public void setObservations(String observations) {
+        this.observations = observations;
+    }
+
+    public OrderStatus getStatus() {
         return status;
     }
 
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
 
+    public BigDecimal getTotalValue() {
+        return totalValue;
+    }
+
+    public void setTotalValue(BigDecimal totalValue) {
+        this.totalValue = totalValue;
+    }
+
+    public List<ServiceItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ServiceItem> items) {
+        this.items = items;
+    }
 
     public void addService(ServiceItem item){
 
