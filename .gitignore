@@ -6,8 +6,7 @@ out/
 !**/src/test/**/out/
 
 ### Alguns Arquivos ###
-README.md
-src/docs/diagram/diagramClass.puml
+target/
 
 # Database configuration
 src/main/resources/db.properties
