@@ -94,8 +94,6 @@ public class VehicleDaoJDBC implements VehicleDao {
             }
 
 
-
-
         }catch (SQLException e){
             throw new DbException("Erro ao inserir veículo.", e);
         }finally {

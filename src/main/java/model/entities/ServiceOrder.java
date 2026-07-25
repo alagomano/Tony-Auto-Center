@@ -17,6 +17,8 @@ public class ServiceOrder {
     private OrderStatus status;
     private BigDecimal totalValue;
 
+    private Vehicle vehicle;
+
 
     private List<ServiceItem> items = new ArrayList<>();
 
@@ -96,6 +98,14 @@ public class ServiceOrder {
 
     public void setItems(List<ServiceItem> items) {
         this.items = items;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
     }
 
     public void addService(ServiceItem item){
