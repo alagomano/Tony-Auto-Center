@@ -12,14 +12,18 @@ public class Vehicle {
     private String model;
     private Integer year;
 
+    private Client client;
+
 
     private List<ServiceOrder> serviceOrders = new ArrayList<>();
 
-    public Vehicle(String plate, String brand, String model, Integer year) {
+    public Vehicle(){}
+    public Vehicle(String plate, String brand, String model, Integer year, Client client) {
         this.plate = plate;
         this.brand = brand;
         this.model = model;
         this.year = year;
+        this.client = client;
     }
 
     public String getPlate(){
@@ -59,6 +63,14 @@ public class Vehicle {
 
     public void setYear(Integer year) {
         this.year = year;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public List<ServiceOrder> getServiceOrders() {
