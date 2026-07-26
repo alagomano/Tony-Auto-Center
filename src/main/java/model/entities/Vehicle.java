@@ -90,7 +90,7 @@ public class Vehicle {
     }
 
     public ServiceOrder openServiceOrder(String problemDescription, String observation){
-        ServiceOrder order = new ServiceOrder(problemDescription, observation);
+        ServiceOrder order = new ServiceOrder(problemDescription, observation, this);
 
         addServiceOrder(order);
 

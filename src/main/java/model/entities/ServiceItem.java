@@ -8,11 +8,15 @@ public class ServiceItem {
     private Integer quantity;
     private BigDecimal unitValue;
 
+    private ServiceOrder serviceOrder;
 
-    public ServiceItem(String description, Integer quantity, BigDecimal unitValue){
+    public ServiceItem(){}
+
+    public ServiceItem(String description, Integer quantity, BigDecimal unitValue, ServiceOrder serviceOrder){
         this.description = description;
         this.quantity = quantity;
         this.unitValue = unitValue;
+        this.serviceOrder = serviceOrder;
     }
 
     public Long getId() {
@@ -45,6 +49,14 @@ public class ServiceItem {
 
     public void setUnitValue(BigDecimal unitValue) {
         this.unitValue = unitValue;
+    }
+
+    public ServiceOrder getServiceOrder() {
+        return serviceOrder;
+    }
+
+    public void setServiceOrder(ServiceOrder serviceOrder) {
+        this.serviceOrder = serviceOrder;
     }
 
     public BigDecimal getSubtotal() {

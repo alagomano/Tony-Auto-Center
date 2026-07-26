@@ -49,7 +49,7 @@ public class Main {
                 "ABC1D23",
                 "Honda",
                 "Civic",
-                2020
+                2020, client
         );
 
         vehicleService.registerVehicle(
@@ -105,7 +105,7 @@ public class Main {
                 new ServiceItem(
                         "Troca de óleo",
                         1,
-                        new BigDecimal("150.00")
+                        new BigDecimal("150.00"), order
                 )
         );
 
@@ -113,7 +113,7 @@ public class Main {
                 new ServiceItem(
                         "Filtro de óleo",
                         1,
-                        new BigDecimal("50.00")
+                        new BigDecimal("50.00"), order
                 )
         );
 

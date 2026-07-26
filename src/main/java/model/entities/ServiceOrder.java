@@ -27,12 +27,13 @@ public class ServiceOrder {
 
     }
 
-    public ServiceOrder(String problemDescription, String observations){
+    public ServiceOrder(String problemDescription, String observations, Vehicle vehicle){
         this.problemDescription = problemDescription;
         this.observations = observations;
         this.entryDate = LocalDateTime.now();
         this.status = OrderStatus.OPEN;
         this.totalValue = BigDecimal.ZERO;
+        this.vehicle = vehicle;
     }
 
 
