@@ -230,7 +230,15 @@ public class VehicleDaoJDBC implements VehicleDao {
 
         try {
             String sql = """
-                    SELECT * FROM vehicles
+                    SELECT vehicles.*,
+                     clients.id AS clientId,
+                     clients.name AS clientName,
+                     clients.cpf AS clientCpf,
+                     clients.phone AS clientPhone,
+                     clients.address AS clientAddress
+                     FROM vehicles
+                     INNER JOIN clients
+                     ON vehicles.client_id = clients.id
                     WHERE plate = ?
                     """;
 
@@ -240,7 +248,8 @@ public class VehicleDaoJDBC implements VehicleDao {
             rs = ps.executeQuery();
 
             if(rs.next()){
-                return instantiateVehicle(rs);
+                Client client = instantiateClient(rs);
+                return instantiateVehicleWithClient(rs, client);
             }
             return null;
         }catch (SQLException e){
