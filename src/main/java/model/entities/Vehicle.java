@@ -100,4 +100,17 @@ public class Vehicle {
 //        Manda uma cópia da lista.
         return new ArrayList<>(serviceOrders);
     }
+
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "id=" + id +
+                ", plate='" + plate + '\'' +
+                ", brand='" + brand + '\'' +
+                ", model='" + model + '\'' +
+                ", year=" + year +
+                ", client=" + client +
+                ", serviceOrders=" + serviceOrders +
+                '}';
+    }
 }
