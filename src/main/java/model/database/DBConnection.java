@@ -27,20 +27,26 @@ public class DBConnection {
     }
 
 //    Carregar propriedades do db.properties
-    private static Properties loadProperties(){
-        try(FileInputStream fs = new FileInputStream("db.properties")){
+private static Properties loadProperties() {
+    try {
+        Properties properties = new Properties();
 
-            Properties properties = new Properties();
+        var input = DBConnection.class
+                .getClassLoader()
+                .getResourceAsStream("db.properties");
 
-            properties.load(fs);
-
-            return properties;
-
-        }catch (IOException e){
-            throw new DbException(e.getMessage());
+        if (input == null) {
+            throw new DbException("Arquivo db.properties não encontrado.");
         }
 
+        properties.load(input);
+
+        return properties;
+
+    } catch (IOException e) {
+        throw new DbException("Erro ao carregar db.properties.", e);
     }
+}
 
     public static void closeStatement(Statement st){
         if(st != null){
