@@ -81,10 +81,6 @@ public class ServiceOrder {
         return status;
     }
 
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
-
     public BigDecimal getTotalValue() {
         return totalValue;
     }
@@ -97,10 +93,6 @@ public class ServiceOrder {
         return items;
     }
 
-    public void setItems(List<ServiceItem> items) {
-        this.items = items;
-    }
-
     public Vehicle getVehicle() {
         return vehicle;
     }
@@ -109,53 +101,44 @@ public class ServiceOrder {
         this.vehicle = vehicle;
     }
 
-    public void addService(ServiceItem item){
+    public void addItem(ServiceItem item){
 
         if(item == null){
-            throw new ServiceException("Tipo de serviço inválido");
+            throw new ServiceException("Item de serviço inválido");
         }
         items.add(item);
         this.totalValue = calculateTotal();
     }
 
     public BigDecimal calculateTotal(){
-
-        BigDecimal total = BigDecimal.ZERO;
-
-        for(ServiceItem item : items){
-            total = total.add(item.getSubtotal());
-        }
-
-        return total;
+        return items.stream()
+                .map(ServiceItem::getSubtotal)
+                .reduce(
+                        BigDecimal.ZERO,
+                        BigDecimal::add
+                );
     }
 
-    public void update(OrderStatus status){
-        if(status == null){
-            throw new ServiceException("Status inválido.");
+    public void start(){
+        if(status != OrderStatus.OPEN){
+            throw new ServiceException("Ordem não pode ser iniciada.");
         }
 
-        if(this.status == OrderStatus.DELIVERED){
-            throw new ServiceException("Ordem já entregue!");
+        status = OrderStatus.IN_PROGRESS;
+    }
+
+    public void deliver(){
+        if(status != OrderStatus.FINISHED){
+            throw new ServiceException("Ordem não pode ser entregue.");
         }
 
-        if(status == OrderStatus.DELIVERED && this.status != OrderStatus.FINISHED){
-            throw new ServiceException("A ordem de serviço precisa ser fechada antes de ser entregue.");
-        }
-
-        this.status = status;
+        status = OrderStatus.DELIVERED;
     }
 
     public void close(){
-        if (status == null){
-            throw new ServiceException("Status inválido.");
-        }
 
-        if(status == OrderStatus.DELIVERED){
-            throw new ServiceException("Ordem já entregue.");
-        }
-
-        if(status == OrderStatus.FINISHED){
-            throw new ServiceException("Ordem de serviço já foi finalizada.");
+        if(status != OrderStatus.IN_PROGRESS){
+            throw new ServiceException("A ordem precisa estar em andamento.");
         }
 
         this.status = OrderStatus.FINISHED;
@@ -165,13 +148,11 @@ public class ServiceOrder {
 
     @Override
     public String toString(){
-        StringBuilder sb = new StringBuilder();
-        for(ServiceItem i : items){
-            sb.append(i.toString() + "\n");
-        }
-        sb.append("Total a pagar: R$ " + this.calculateTotal());
-
-        return sb.toString();
+        return "ServiceOrder{" +
+                "id=" + id +
+                ", status=" + status +
+                ", totalValue=" + totalValue +
+                '}';
 
     }
 
