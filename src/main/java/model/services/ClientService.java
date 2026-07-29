@@ -1,44 +1,62 @@
 package model.services;
 
+import model.dao.ClientDao;
+import model.dao.DaoFactory;
 import model.entities.Client;
 import model.exception.ServiceException;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ClientService {
 
-    private Map<String, Client> clients = new HashMap<>();
+    private final ClientDao clientDao = DaoFactory.createClientDao();
+
+    private void validatedClient(Client client){
+        if(client == null){
+            throw new ServiceException("Cliente inválido.");
+        }
+        if(client.getName() == null || client.getName().isBlank()){
+            throw new ServiceException("Nome do cliente inválido.");
+        }
+        if(client.getCpf() == null || client.getCpf().isBlank()){
+            throw new ServiceException("CPF do cliente inválido.");
+        }
+        if(client.getPhone() == null || client.getPhone().isBlank()){
+            throw new ServiceException("Telefone do cliente inválido.");
+        }
+    }
 
     public void registerClient(Client client){
-        if(clients.containsKey(client.getCpf())){
-            throw new ServiceException("Cliente já existe.");
-        }
-
-        clients.put(client.getCpf(), client);
+        validatedClient(client);
+        clientDao.insert(client);
     }
 
     public Client findClient(String cpf){
-        Client client = clients.get(cpf);
-        if(client == null){
-            throw new ServiceException("Cliente não encontrado");
+        if(cpf == null || cpf.isBlank()){
+            throw new ServiceException("CPF inválido.");
         }
+        Client client = clientDao.findByCpf(cpf);
+
+        if (client == null){
+            throw new ServiceException("Cliente não encontrado.");
+        }
+
         return client;
     }
 
     public void removeClient(Client client){
-        if(!clients.containsKey(client.getCpf())){
-            throw new ServiceException("Cliente não se encontra da lista.");
+        if(client == null){
+            throw new ServiceException("Cliente inválido.");
+        } if (client.getId() == null){
+            throw new ServiceException("Cliente com id inválido.");
         }
 
-        clients.remove(client.getCpf());
+        clientDao.deleteById(client.getId());
 
     }
 
     public Collection<Client> getClients(){
-        return new ArrayList<>(clients.values());
+        return clientDao.findAll();
     }
 
 }
