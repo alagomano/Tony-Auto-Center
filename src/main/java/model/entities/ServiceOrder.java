@@ -80,6 +80,7 @@ public class ServiceOrder {
     public OrderStatus getStatus() {
         return status;
     }
+    public void setStatus(OrderStatus status) {this.status = status;}
 
     public BigDecimal getTotalValue() {
         return totalValue;

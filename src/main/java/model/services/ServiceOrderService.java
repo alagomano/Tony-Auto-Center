@@ -42,7 +42,6 @@ public class ServiceOrderService {
         }
 
         serviceOrder.setVehicle(vehicle);
-        serviceOrder.start();
         serviceOrderDao.insert(serviceOrder);
 
         return serviceOrder;
