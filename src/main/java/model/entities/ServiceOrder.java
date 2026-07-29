@@ -106,6 +106,7 @@ public class ServiceOrder {
         if(item == null){
             throw new ServiceException("Item de serviço inválido");
         }
+        item.setServiceOrder(this);
         items.add(item);
         this.totalValue = calculateTotal();
     }
