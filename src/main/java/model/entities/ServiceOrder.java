@@ -112,7 +112,7 @@ public class ServiceOrder {
         this.totalValue = calculateTotal();
     }
 
-    public BigDecimal calculateTotal(){
+    private BigDecimal calculateTotal(){
         return items.stream()
                 .map(ServiceItem::getSubtotal)
                 .reduce(

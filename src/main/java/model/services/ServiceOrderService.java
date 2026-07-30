@@ -1,6 +1,7 @@
 package model.services;
 
 import model.dao.DaoFactory;
+import model.dao.ServiceItemDao;
 import model.dao.ServiceOrderDao;
 import model.entities.ServiceItem;
 import model.entities.ServiceOrder;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public class ServiceOrderService {
     private final ServiceOrderDao serviceOrderDao = DaoFactory.createServiceOrderDao();
+    private final ServiceItemDao serviceItemDao = DaoFactory.createServiceItemDao();
 
     private void validateVehicle(Vehicle vehicle){
         if(vehicle == null) {
@@ -60,6 +62,7 @@ public class ServiceOrderService {
         }
 
         serviceOrder.addItem(item);
+        serviceItemDao.insert(item);
         serviceOrderDao.update(serviceOrder);
 
     }
@@ -67,8 +70,29 @@ public class ServiceOrderService {
     public ServiceOrder findById(Long serviceOrderId){
         validateID(serviceOrderId);
         ServiceOrder serviceOrder = serviceOrderDao.findById(serviceOrderId);
+        List<ServiceItem> items = serviceItemDao.findByServiceOrder(serviceOrderId);
+        items.forEach(serviceOrder::addItem);
         validateServiceOrder(serviceOrder);
         return serviceOrder;
+    }
+
+    public void updateServiceOrder(ServiceOrder serviceOrder){
+        validateServiceOrder(serviceOrder);
+        validateID(serviceOrder.getId());
+        ServiceOrder order = findById(serviceOrder.getId());
+
+        if(order == null){
+            throw new ServiceException("Ordem de serviço não encontrada.");
+        }
+
+        serviceOrderDao.update(serviceOrder);
+    }
+
+    public void deleteByIdServiceOrder(Long serviceOrderId){
+        validateID(serviceOrderId);
+        ServiceOrder order = serviceOrderDao.findById(serviceOrderId);
+        validateServiceOrder(order);
+        serviceOrderDao.deleteById(serviceOrderId);
     }
 
     public void startServiceOrder(Long serviceOrderId){
