@@ -25,6 +25,11 @@ public class ServiceOrderService {
             throw new ServiceException("Ordem de serviço inválida.");
         }
     }
+    private void validateServiceItem(ServiceItem serviceItem){
+        if (serviceItem == null) {
+            throw new ServiceException("Item inválido.");
+        }
+    }
 
     private void validateID(Long id){
         if (id == null || id < 0){
@@ -67,7 +72,7 @@ public class ServiceOrderService {
 
     }
 
-    public ServiceOrder findById(Long serviceOrderId){
+    public ServiceOrder findByIdServiceOrder(Long serviceOrderId){
         validateID(serviceOrderId);
         ServiceOrder serviceOrder = serviceOrderDao.findById(serviceOrderId);
         List<ServiceItem> items = serviceItemDao.findByServiceOrder(serviceOrderId);
@@ -79,7 +84,7 @@ public class ServiceOrderService {
     public void updateServiceOrder(ServiceOrder serviceOrder){
         validateServiceOrder(serviceOrder);
         validateID(serviceOrder.getId());
-        ServiceOrder order = findById(serviceOrder.getId());
+        ServiceOrder order = findByIdServiceOrder(serviceOrder.getId());
 
         if(order == null){
             throw new ServiceException("Ordem de serviço não encontrada.");
@@ -95,20 +100,59 @@ public class ServiceOrderService {
         serviceOrderDao.deleteById(serviceOrderId);
     }
 
+    public ServiceItem findByIdServiceItem(Long serviceOrderId, Long serviceItemId){
+        validateID(serviceOrderId);
+        validateID(serviceItemId);
+
+        ServiceOrder order = findByIdServiceOrder(serviceOrderId);
+        validateServiceOrder(order);
+
+        List<ServiceItem> items = order.getItems();
+
+        ServiceItem item = items.stream().filter(i -> i.getId().equals(serviceItemId)).findFirst().orElse(null);
+        if(item == null){
+            throw new ServiceException("Item não pertence à ordem.");
+        }
+        return item;
+    }
+
+    public void updateServiceItem(Long serviceOrderId, ServiceItem serviceItem){
+        validateID(serviceOrderId);
+        validateServiceItem(serviceItem);
+
+        ServiceOrder order = findByIdServiceOrder(serviceOrderId);
+        validateServiceOrder(order);
+
+        boolean exists = order.getItems().stream().anyMatch(i -> i.getId().equals(serviceItem.getId()));
+        if(!exists){
+            throw new ServiceException("Item não pertence à ordem.");
+        }
+
+        serviceItemDao.update(serviceItem);
+
+    }
+
+    public void deleteByIdServiceItem(Long serviceItemId){
+        validateID(serviceItemId);
+        ServiceItem item = serviceItemDao.findById(serviceItemId);
+        validateServiceItem(item);
+        serviceItemDao.deleteById(serviceItemId);
+    }
+
     public void startServiceOrder(Long serviceOrderId){
-        ServiceOrder serviceOrder = findById(serviceOrderId);
+        ServiceOrder serviceOrder = findByIdServiceOrder(serviceOrderId);
         serviceOrder.start();
         serviceOrderDao.update(serviceOrder);
     }
 
     public void closeServiceOrder(Long serviceOrderId){
-        ServiceOrder serviceOrder = findById(serviceOrderId);
+        ServiceOrder serviceOrder = findByIdServiceOrder(serviceOrderId);
         serviceOrder.close();
         serviceOrderDao.update(serviceOrder);
     }
 
     public void deliverServiceOrder(Long serviceOrderId){
-        ServiceOrder serviceOrder = findById(serviceOrderId);
+        ServiceOrder serviceOrder = findByIdServiceOrder(serviceOrderId);
         serviceOrder.deliver();
         serviceOrderDao.update(serviceOrder);
     }
