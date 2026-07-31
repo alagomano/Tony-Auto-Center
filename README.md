@@ -1,302 +1,329 @@
-# 🔧 Tony Auto Center — Sistema de Gestão para Oficina Mecânica
+# 🔧 Tony Auto Center — Sistema de Gerenciamento para Oficina Mecânica
 
-Sistema web de gestão para oficina mecânica de pequeno porte. Centraliza o controle de clientes, veículos, ordens de serviço e histórico de manutenção, substituindo controles manuais por uma plataforma digital organizada e escalável.
+Sistema de gerenciamento para oficinas mecânicas de pequeno porte desenvolvido em **Java 25**, utilizando arquitetura em camadas, persistência de dados com **JDBC** e **MySQL**. O projeto tem como objetivo substituir controles manuais por uma aplicação organizada, aplicando boas práticas de desenvolvimento orientado a objetos e modelagem de domínio.
 
----
-
-## 📋 Índice
-
-- [Visão Geral](#visão-geral)
-- [Funcionalidades da MVP](#funcionalidades-da-mvp)
-- [Requisitos Funcionais](#requisitos-funcionais)
-- [Requisitos Não Funcionais](#requisitos-não-funcionais)
-- [Regras de Negócio](#regras-de-negócio)
-- [Modelagem do Domínio](#modelagem-do-domínio)
-- [Arquitetura](#arquitetura)
-- [Tecnologias](#tecnologias)
-- [Roadmap de Desenvolvimento](#roadmap-de-desenvolvimento)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Status Atual](#status-atual)
+> **Status:** Em desenvolvimento (MVP funcional)
 
 ---
 
-## Visão Geral
+# 📋 Índice
 
-O **Tony Auto Center** é uma oficina mecânica de pequeno porte administrada pelo próprio proprietário. O sistema resolve problemas comuns de oficinas que ainda operam de forma manual:
-
-| Problema atual | Solução proposta |
-|---|---|
-| Perda de histórico de serviços | Histórico persistido por veículo, consultável pela placa |
-| Falta de organização dos atendimentos | Ordens de serviço com status e datas controlados |
-| Controle manual suscetível a erros | Cadastro digital centralizado |
-| Dificuldade de localizar informações | Busca principal pela placa do veículo |
-| Ausência de rastreabilidade | Todos os serviços vinculados à OS e ao veículo |
-
----
-
-## Funcionalidades da MVP
-
-### 1. Cadastro de Clientes
-- Nome, telefone e e-mail
-
-### 2. Cadastro de Veículos
-- Placa, marca, modelo, ano e quilometragem
-- Vinculado a um cliente
-- **A placa é o identificador principal de busca**
-
-### 3. Ordem de Serviço
-- Data de entrada, data de saída, descrição do problema, observações, status e valor total
-- Controle de status via enum `OrderStatus`
-
-### 4. Itens de Serviço
-- Cada OS pode ter vários serviços (ex.: troca de óleo, alinhamento, freios)
-- Descrição, quantidade, valor unitário e subtotal calculado automaticamente
-
-### 5. Histórico do Veículo
-- Busca pela placa retorna todas as OSs anteriores e serviços realizados
+- [📖 Visão Geral](#-visão-geral)
+- [🚀 Funcionalidades](#-funcionalidades)
+- [🏗 Arquitetura](#-arquitetura)
+- [📦 Modelagem do Domínio](#-modelagem-do-domínio)
+- [🛠 Tecnologias](#-tecnologias)
+- [📁 Estrutura do Projeto](#-estrutura-do-projeto)
+- [📐 Regras de Negócio](#-regras-de-negócio)
+- [🗺 Roadmap](#-roadmap)
+- [📚 Aprendizados](#-aprendizados)
+- [📈 Status Atual](#-status-atual)
 
 ---
 
-## Requisitos Funcionais
+# 📖 Visão Geral
 
-| ID | Funcionalidade | Prioridade |
-|---|---|---|
-| RF-01 | Cadastrar cliente | Alta |
-| RF-02 | Editar cliente | Média |
-| RF-03 | Listar clientes | Alta |
-| RF-04 | Cadastrar veículo vinculado a um cliente | Alta |
-| RF-05 | Editar veículo | Média |
-| RF-06 | Buscar veículo por placa (retorna OS ativa + histórico) | Alta |
-| RF-07 | Abrir ordem de serviço para um veículo | Alta |
-| RF-08 | Atualizar status da OS conforme transições permitidas | Alta |
-| RF-09 | Adicionar itens de serviço a uma OS | Alta |
-| RF-10 | Calcular subtotal por item e total da OS automaticamente | Alta |
-| RF-11 | Registrar data de saída ao fechar a OS | Alta |
-| RF-12 | Consultar histórico completo de manutenção do veículo | Alta |
-| RF-13 | Listar ordens de serviço filtrando por status | Média |
+O Tony Auto Center nasceu com o objetivo de resolver problemas comuns encontrados em oficinas mecânicas que ainda realizam seus controles de forma manual.
+
+Entre eles:
+
+| Problema | Solução |
+|----------|----------|
+| Perda do histórico de serviços | Histórico persistido por veículo |
+| Dificuldade de localizar informações | Busca por placa e identificação da ordem de serviço |
+| Controle manual suscetível a erros | Cadastro centralizado de clientes, veículos e ordens |
+| Falta de organização | Fluxo controlado por regras de negócio |
+
+O projeto também serve como estudo prático de desenvolvimento Back-end utilizando Java, aplicando conceitos de Programação Orientada a Objetos, persistência relacional e arquitetura em camadas.
 
 ---
 
-## Requisitos Não Funcionais
+# 🚀 Funcionalidades
 
-| ID | Categoria | Descrição |
-|---|---|---|
-| RNF-01 | Usabilidade | Interface intuitiva, sem necessidade de treinamento especializado |
-| RNF-02 | Desempenho | Busca por placa em menos de 2 segundos |
-| RNF-03 | Disponibilidade | Disponível no horário de funcionamento da oficina (seg–sáb, 8h–18h) |
-| RNF-04 | Manutenibilidade | Arquitetura em camadas (Controller → Service → Repository → Database) |
-| RNF-05 | Escalabilidade | Modelagem preparada para autenticação, relatórios e upload de fotos (V2/V3) |
-| RNF-06 | Portabilidade | Acessível via navegador em desktop e mobile |
-| RNF-07 | Confiabilidade | Integridade referencial garantida pelo banco de dados |
-| RNF-08 | Segurança | Autenticação e controle de acesso planejados para a V2 (fora da MVP) |
-| RNF-09 | Tecnologia | Java + Spring Boot + PostgreSQL + HTML/CSS/JS → React |
-| RNF-10 | Padronização | API REST com códigos HTTP semânticos, DTOs e tratamento centralizado de exceções |
+## Clientes
+
+- Cadastro de clientes
+- Atualização de dados
+- Remoção de clientes
+- Busca por CPF
+- Listagem de clientes
 
 ---
 
-## Regras de Negócio
+## Veículos
 
-### Relacionamentos
-- Um cliente pode ter zero ou mais veículos
-- Um veículo pertence a exatamente um cliente
-- Um veículo pode ter zero ou mais ordens de serviço
-- Uma OS pertence a exatamente um veículo
-- Uma OS pode ter um ou mais itens de serviço
+- Cadastro vinculado a um cliente
+- Atualização
+- Remoção
+- Busca por placa
+- Histórico de ordens de serviço
 
-### Regras Operacionais
-- `RN-07` A placa é única no sistema e é o identificador principal de busca
-- `RN-08` Não é permitido abrir nova OS para veículo com OS em status `OPEN` ou `IN_PROGRESS`
-- `RN-09` Subtotal do item = `quantidade × valor_unitário` (calculado automaticamente)
-- `RN-10` Total da OS = soma dos subtotais de todos os itens
-- `RN-11` Data de entrada é registrada automaticamente na abertura da OS
-- `RN-12` Data de saída é registrada ao fechar a OS (`FINISHED`)
-- `RN-13` A quilometragem do veículo pode ser atualizada a cada nova OS
-- `RN-14` Uma OS com status `DELIVERED` não pode ser alterada (estado final)
+---
 
-### Ciclo de Vida da Ordem de Serviço
+## Ordens de Serviço
 
-```
-[OPEN] → [IN_PROGRESS] → [FINISHED] → [DELIVERED]
-                ↕
-        [WAITING_PARTS]
+- Abertura de ordem
+- Atualização de informações
+- Controle de status
+- Listagem
+- Busca por ID
+- Associação com veículo
+
+Estados da ordem:
+
+- OPEN
+- IN_PROGRESS
+- FINISHED
+- DELIVERED
+
+---
+
+## Itens da Ordem de Serviço
+
+- Adicionar itens
+- Cálculo automático do subtotal
+- Cálculo automático do valor total da ordem
+
+---
+
+# 🏗 Arquitetura
+
+O projeto utiliza arquitetura em camadas.
+
+```text
+Application
+      │
+      ▼
+Services
+      │
+      ▼
+DAO (JDBC)
+      │
+      ▼
+MySQL
 ```
 
-| De | Para | Condição |
-|---|---|---|
-| `OPEN` | `IN_PROGRESS` | Atendimento iniciado |
-| `IN_PROGRESS` | `WAITING_PARTS` | Aguardando chegada de peças |
-| `IN_PROGRESS` | `FINISHED` | Todos os serviços concluídos |
-| `WAITING_PARTS` | `IN_PROGRESS` | Peças recebidas |
-| `FINISHED` | `DELIVERED` | Veículo entregue ao cliente |
+Cada camada possui responsabilidade bem definida:
+
+- **Application:** interação com o usuário e execução dos testes.
+- **Services:** regras de negócio e validações.
+- **DAO:** persistência e consultas utilizando JDBC.
+- **Database:** armazenamento dos dados.
 
 ---
 
-## Modelagem do Domínio
+# 📦 Modelagem do Domínio
 
-### Entidades
+## Entidades
 
-```
-Client
-├── id: Long
-├── name: String
-├── phone: String
-├── email: String
-└── vehicles: List<Vehicle>
+### Client
 
-Vehicle
-├── id: Long
-├── plate: String          ← chave de busca principal
-├── brand: String
-├── model: String
-├── year: Integer
-├── mileage: Integer
-└── serviceOrders: List<ServiceOrder>
+- id
+- name
+- cpf
+- phone
+- address
 
-ServiceOrder
-├── id: Long
-├── entryDate: LocalDateTime
-├── exitDate: LocalDateTime
-├── problemDescription: String
-├── observations: String
-├── status: OrderStatus
-├── totalValue: BigDecimal
-├── vehicle: Vehicle
-└── items: List<ServiceItem>
+Relacionamento:
 
-ServiceItem
-├── id: Long
-├── description: String
-├── quantity: Integer
-├── unitValue: BigDecimal
-└── subtotal: quantity × unitValue   ← calculado
+- 1 Cliente → N Veículos
 
-OrderStatus (enum)
-├── OPEN
-├── IN_PROGRESS
-├── WAITING_PARTS
-├── FINISHED
-└── DELIVERED
-```
+---
 
-### Relacionamentos
-```
-Client 1 ──── 0..* Vehicle
-Vehicle 1 ──── 0..* ServiceOrder
-ServiceOrder 1 ──── 1..* ServiceItem
-ServiceOrder ──── OrderStatus
+### Vehicle
+
+- id
+- plate
+- brand
+- model
+- year
+
+Relacionamento:
+
+- 1 Veículo → N Ordens de Serviço
+
+---
+
+### ServiceOrder
+
+- id
+- entryDate
+- exitDate
+- problemDescription
+- observations
+- status
+- totalValue
+
+Relacionamento:
+
+- 1 Ordem → N Itens de Serviço
+
+---
+
+### ServiceItem
+
+- id
+- description
+- quantity
+- unitValue
+
+Subtotal calculado automaticamente.
+
+---
+
+### OrderStatus
+
+- OPEN
+- IN_PROGRESS
+- FINISHED
+- DELIVERED
+
+---
+
+# 🛠 Tecnologias
+
+## Linguagem
+
+- Java 25
+
+## Persistência
+
+- JDBC
+- MySQL
+
+## Build
+
+- Maven
+
+## Controle de Versão
+
+- Git
+- GitHub
+
+---
+
+# 📁 Estrutura do Projeto
+
+```text
+src
+├── application
+│   ├── Main.java
+│   └── tests
+│
+├── db
+│
+├── model
+│   ├── dao
+│   │   ├── impl
+│   │   └── DaoFactory
+│   │
+│   ├── entities
+│   │
+│   ├── enums
+│   │
+│   ├── exception
+│   │
+│   └── services
+│
+└── resources
 ```
 
 ---
 
-## Arquitetura
+# 📐 Regras de Negócio
 
-```
-Controller  →  recebe requisições HTTP, valida DTOs
-    ↓
-Service     →  regras de negócio e orquestração
-    ↓
-Repository  →  acesso e persistência de dados (JPA)
-    ↓
-Database    →  PostgreSQL
-```
-
-### Estrutura de pacotes planejada
-```
-br.com.tonyauto
-├── controller
-├── service
-├── repository
-├── domain
-│   ├── model        ← entidades JPA
-│   └── enums        ← OrderStatus
-├── dto
-│   ├── request
-│   └── response
-├── exception
-└── config
-```
+- Um cliente pode possuir vários veículos.
+- Um veículo pertence a apenas um cliente.
+- Um veículo pode possuir várias ordens de serviço.
+- Apenas uma ordem pode estar ativa (OPEN ou IN_PROGRESS) para um mesmo veículo.
+- Cada ordem pode possuir vários itens de serviço.
+- O subtotal de cada item é calculado automaticamente.
+- O valor total da ordem corresponde à soma dos subtotais.
+- A data de entrada é registrada automaticamente na abertura da ordem.
+- A data de saída é registrada automaticamente ao finalizar a ordem.
+- Ordens entregues não podem voltar para estados anteriores.
 
 ---
 
-## Tecnologias
+# 🗺 Roadmap
 
-### Backend
-- Java
-- Spring Boot
-- JPA / Hibernate
+## ✅ Versão 1 — Java + JDBC
 
-### Banco de Dados
-- PostgreSQL
-
-### Frontend
-- MVP: HTML, CSS, JavaScript
-- Evolução: React
-
-### Ferramentas
-- Git / GitHub
-- Docker
-- Postman
+- Modelagem do domínio
+- Arquitetura em camadas
+- Persistência com JDBC
+- CRUD de Clientes
+- CRUD de Veículos
+- CRUD de Ordens de Serviço
+- Gerenciamento de Itens da Ordem
 
 ---
 
-## Roadmap de Desenvolvimento
+## 🔄 Versão 2 — Spring Boot
 
-### ✅ Etapa 1 — Modelagem e Domínio
-- [x] Levantamento de requisitos
-- [x] Regras de negócio
-- [x] Diagramas UML (Classes, Pacotes, Casos de Uso, Sequência, Estados, Atividades)
-- [x] Modelagem do domínio
+Planejado:
 
-### 🔄 Etapa 2 — Implementação em Java Puro
-- [ ] Entidades com atributos e métodos
-- [ ] Enums (`OrderStatus`)
-- [ ] Cálculo de subtotal e total da OS
-- [ ] Histórico de serviços em memória
-- [ ] Validações e exceções de domínio
-
-### ⏳ Etapa 3 — Persistência de Dados
-- [ ] Configuração do PostgreSQL
-- [ ] Mapeamento JPA (`@Entity`, `@OneToMany`, `@ManyToOne`)
-- [ ] Relacionamentos entre entidades
-- [ ] Persistência e consultas básicas
-
-### ⏳ Etapa 4 — API REST
-- [ ] Controllers com endpoints REST
-- [ ] DTOs de request e response
-- [ ] Validações com Bean Validation
-- [ ] Tratamento global de exceções
-- [ ] Documentação com SpringDoc / OpenAPI
-
-### ⏳ Etapa 5 — Frontend
-- [ ] Tela de busca por placa
-- [ ] Cadastro de clientes e veículos
-- [ ] Abertura e gestão de ordens de serviço
-- [ ] Histórico do veículo
-
-### ⏳ Etapa 6 — Deploy
-- [ ] Backend hospedado
-- [ ] Banco de dados online
-- [ ] Frontend hospedado
-- [ ] Integração completa
+- Migração para Spring Boot
+- Spring Data JPA
+- Hibernate
+- API REST
+- DTOs
+- Bean Validation
+- Tratamento global de exceções
+- Documentação com OpenAPI/Swagger
 
 ---
 
-## Evoluções Futuras
+## 🔄 Versão 3
 
-**V2**
-- Upload de fotos dos veículos
-- Geração de PDF
-- Relatórios e exportação CSV
+Planejado:
 
-**V3**
-- Autenticação e permissões
-- Dashboard administrativo
+- Autenticação
+- Controle de usuários
+- Dashboard
+- Relatórios
+- Upload de imagens
+- Deploy em nuvem
 
 ---
 
-## Status Atual
+# 📚 Aprendizados
 
-> 🔄 **Etapa 2 em andamento** — Implementação das entidades em Java puro.
->
-> Entidades implementadas até o momento: `Vehicle`, `ServiceOrder`.
-> Próximo passo: implementar `ServiceItem`, `Client` e conectar as entidades via `main` para validar o fluxo completo.
+Durante o desenvolvimento deste projeto foram aplicados conceitos como:
+
+- Programação Orientada a Objetos
+- Encapsulamento
+- Composição entre entidades
+- Camada de Serviço
+- DAO Pattern
+- Persistência de dados com JDBC
+- Modelagem de banco de dados relacional
+- Tratamento de exceções
+- Regras de negócio
+- Arquitetura em camadas
+- Maven
+- Git e GitHub
+
+---
+
+# 📈 Status Atual
+
+**Versão atual:** MVP em desenvolvimento.
+
+### Implementado
+
+- Modelagem completa do domínio
+- Persistência com JDBC
+- CRUD de Clientes
+- CRUD de Veículos
+- CRUD de Ordens de Serviço
+- Controle de status das ordens
+- Associação entre Clientes, Veículos, Ordens de Serviço e Itens
+- Cálculo automático de subtotais e valor total
+
+### Próximos passos
+
+- Validar todos os fluxos da aplicação e refinar as regras de negócio
+- Implementar uma interface de console completa para navegação e testes do sistema
+- Criar testes para os principais casos de uso da camada de serviço
+- Preparar a migração do projeto para Spring Boot utilizando JPA/Hibernate
