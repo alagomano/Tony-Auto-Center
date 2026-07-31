@@ -1,11 +1,9 @@
 package model.entities;
 
+import model.exception.DomainException;
 import model.exception.ServiceException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Client {
 
@@ -63,43 +61,46 @@ public class Client {
         this.address = address;
     }
 
-    public void setVehicles(Map<String, Vehicle> vehicles) {
-        this.vehicles = vehicles;
+    private void validatePlate(String plate){
+        if (plate == null || plate.isBlank()){
+            throw new DomainException("Placa inválida.");
+        }
     }
 
-    public void addVehicle(Vehicle vehicle){
+    private void validateVehicle(Vehicle vehicle){
         if(vehicle == null){
-            throw new ServiceException("Veículo inválido!");
+            throw new DomainException("Veículo inválido!");
         }
+    }
+    public void addVehicle(Vehicle vehicle){
+        validateVehicle(vehicle);
+        validatePlate(vehicle.getPlate());
         if(vehicles.containsKey(vehicle.getPlate())){
-            throw new ServiceException("Veículo já cadastrado");
+            throw new DomainException("Veículo já cadastrado");
         }
         vehicles.put(vehicle.getPlate(), vehicle);
     }
 
-    public Vehicle getVehicle(String plate){
-        return vehicles.get(plate);
-    }
-
-    public Collection<Vehicle> getVehicles(){
-        return new ArrayList<>(vehicles.values());
-    }
-
     public void removeVehicle(String plate){
+        validatePlate(plate);
+
         if(!vehicles.containsKey(plate)) {
-            throw new ServiceException("Veículo não encontrado");
+            throw new DomainException("Veículo não encontrado");
         }
 
         vehicles.remove(plate);
     }
 
+    public Vehicle getVehicle(String plate){
+        validatePlate(plate);
+        return vehicles.get(plate);
+    }
+    public Collection<Vehicle> getVehicles(){
+        return Collections.unmodifiableCollection(vehicles.values());
+    }
 
     @Override
     public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append(name + " | ");
-        sb.append(cpf + " ");
-        return sb.toString();
+        return "ID: "+ id + " | Nome: " + name + " | CPF: " + cpf + " | Telefone " + phone + " | Endereço: " + address;
     }
-
 }

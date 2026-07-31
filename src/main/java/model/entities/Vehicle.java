@@ -1,5 +1,6 @@
 package model.entities;
 
+import model.exception.DomainException;
 import model.exception.ServiceException;
 
 import java.util.ArrayList;
@@ -81,9 +82,9 @@ public class Vehicle {
         this.serviceOrders = serviceOrders;
     }
 
-    private void addServiceOrder(ServiceOrder order){
+    public void addServiceOrder(ServiceOrder order){
         if(order == null){
-            throw new ServiceException("Ordem de serviço inválida.");
+            throw new DomainException("Ordem de serviço inválida.");
         }
 
         serviceOrders.add(order);

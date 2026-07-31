@@ -9,6 +9,9 @@ import model.entities.Vehicle;
 import model.enums.OrderStatus;
 import model.exception.ServiceException;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 public class ServiceOrderService {
@@ -49,6 +52,9 @@ public class ServiceOrderService {
         }
 
         serviceOrder.setVehicle(vehicle);
+        serviceOrder.setEntryDate(LocalDateTime.now());
+        serviceOrder.setStatus(OrderStatus.OPEN);
+        serviceOrder.setTotalValue(BigDecimal.ZERO);
         serviceOrderDao.insert(serviceOrder);
 
         return serviceOrder;
@@ -116,7 +122,7 @@ public class ServiceOrderService {
 
     }
 
-    public void deleteByIdServiceItem(Long serviceOrderId, Long serviceItemId){
+    public void deleteServiceItemById(Long serviceOrderId, Long serviceItemId){
         validateID(serviceItemId);
         findServiceItemById(serviceOrderId, serviceItemId);
         serviceItemDao.deleteById(serviceItemId);
@@ -138,6 +144,11 @@ public class ServiceOrderService {
         ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
         serviceOrder.deliver();
         serviceOrderDao.update(serviceOrder);
+    }
+
+    public List<ServiceItem> getItemsByOrder(Long serviceOrderId){
+        ServiceOrder order = findServiceOrderById(serviceOrderId);
+        return order.getItems();
     }
 
     public List<ServiceOrder> findAll(){

@@ -68,6 +68,6 @@ public class ServiceItem {
 
     @Override
     public String toString(){
-        return description + " | " + quantity + " | R$ " + unitValue + " | " + "SubTotal R$ " + getSubtotal();
+        return id + " | " + description + " | " + quantity + " | R$ " + unitValue + " | " + "SubTotal R$ " + getSubtotal();
     }
 }

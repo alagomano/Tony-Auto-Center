@@ -30,9 +30,6 @@ public class ServiceOrder {
     public ServiceOrder(String problemDescription, String observations, Vehicle vehicle){
         this.problemDescription = problemDescription;
         this.observations = observations;
-        this.entryDate = LocalDateTime.now();
-        this.status = OrderStatus.OPEN;
-        this.totalValue = BigDecimal.ZERO;
         this.vehicle = vehicle;
     }
 
@@ -150,11 +147,11 @@ public class ServiceOrder {
 
     @Override
     public String toString(){
-        return "ServiceOrder{" +
-                "id=" + id +
-                ", status=" + status +
-                ", totalValue=" + totalValue +
-                '}';
+        return "ID: " + id +
+                " | Descrição:" + problemDescription +
+                " | Observação: " + observations +
+                " | " + status +
+                " | Valor Total: " + totalValue;
 
     }
 
