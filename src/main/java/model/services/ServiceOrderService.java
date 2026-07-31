@@ -56,15 +56,9 @@ public class ServiceOrderService {
 
     public void addItemToOrder(Long serviceOrderId, ServiceItem item){
         validateID(serviceOrderId);
-        if(item == null){
-            throw new ServiceException("Item inválido.");
-        }
+        validateServiceItem(item);
 
-        ServiceOrder serviceOrder = serviceOrderDao.findById(serviceOrderId);
-
-        if (serviceOrder == null){
-            throw new ServiceException("Ordem de serviço inválida.");
-        }
+        ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
 
         serviceOrder.addItem(item);
         serviceItemDao.insert(item);
@@ -72,47 +66,42 @@ public class ServiceOrderService {
 
     }
 
-    public ServiceOrder findByIdServiceOrder(Long serviceOrderId){
+    public ServiceOrder findServiceOrderById(Long serviceOrderId){
         validateID(serviceOrderId);
         ServiceOrder serviceOrder = serviceOrderDao.findById(serviceOrderId);
+        validateServiceOrder(serviceOrder);
+
         List<ServiceItem> items = serviceItemDao.findByServiceOrder(serviceOrderId);
         items.forEach(serviceOrder::addItem);
-        validateServiceOrder(serviceOrder);
         return serviceOrder;
     }
 
     public void updateServiceOrder(ServiceOrder serviceOrder){
         validateServiceOrder(serviceOrder);
         validateID(serviceOrder.getId());
-        ServiceOrder order = findByIdServiceOrder(serviceOrder.getId());
-
-        if(order == null){
-            throw new ServiceException("Ordem de serviço não encontrada.");
-        }
+        findServiceOrderById(serviceOrder.getId());
 
         serviceOrderDao.update(serviceOrder);
     }
 
-    public void deleteByIdServiceOrder(Long serviceOrderId){
+    public void deleteServiceOrderById(Long serviceOrderId){
         validateID(serviceOrderId);
-        ServiceOrder order = serviceOrderDao.findById(serviceOrderId);
-        validateServiceOrder(order);
+        findServiceOrderById(serviceOrderId);
         serviceOrderDao.deleteById(serviceOrderId);
     }
 
-    public ServiceItem findByIdServiceItem(Long serviceOrderId, Long serviceItemId){
+    public ServiceItem findServiceItemById(Long serviceOrderId, Long serviceItemId){
         validateID(serviceOrderId);
         validateID(serviceItemId);
 
-        ServiceOrder order = findByIdServiceOrder(serviceOrderId);
-        validateServiceOrder(order);
+        ServiceOrder order = findServiceOrderById(serviceOrderId);
 
         List<ServiceItem> items = order.getItems();
 
-        ServiceItem item = items.stream().filter(i -> i.getId().equals(serviceItemId)).findFirst().orElse(null);
-        if(item == null){
-            throw new ServiceException("Item não pertence à ordem.");
-        }
+        ServiceItem item = items.stream().filter(i -> i.getId().equals(serviceItemId))
+                .findFirst().orElseThrow(() -> new ServiceException("Item não pertence à ordem."));
+        validateServiceItem(item);
+
         return item;
     }
 
@@ -120,39 +109,33 @@ public class ServiceOrderService {
         validateID(serviceOrderId);
         validateServiceItem(serviceItem);
 
-        ServiceOrder order = findByIdServiceOrder(serviceOrderId);
-        validateServiceOrder(order);
-
-        boolean exists = order.getItems().stream().anyMatch(i -> i.getId().equals(serviceItem.getId()));
-        if(!exists){
-            throw new ServiceException("Item não pertence à ordem.");
-        }
+        findServiceOrderById(serviceOrderId);
+        findServiceItemById(serviceOrderId, serviceItem.getId());
 
         serviceItemDao.update(serviceItem);
 
     }
 
-    public void deleteByIdServiceItem(Long serviceItemId){
+    public void deleteByIdServiceItem(Long serviceOrderId, Long serviceItemId){
         validateID(serviceItemId);
-        ServiceItem item = serviceItemDao.findById(serviceItemId);
-        validateServiceItem(item);
+        findServiceItemById(serviceOrderId, serviceItemId);
         serviceItemDao.deleteById(serviceItemId);
     }
 
     public void startServiceOrder(Long serviceOrderId){
-        ServiceOrder serviceOrder = findByIdServiceOrder(serviceOrderId);
+        ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
         serviceOrder.start();
         serviceOrderDao.update(serviceOrder);
     }
 
     public void closeServiceOrder(Long serviceOrderId){
-        ServiceOrder serviceOrder = findByIdServiceOrder(serviceOrderId);
+        ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
         serviceOrder.close();
         serviceOrderDao.update(serviceOrder);
     }
 
     public void deliverServiceOrder(Long serviceOrderId){
-        ServiceOrder serviceOrder = findByIdServiceOrder(serviceOrderId);
+        ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
         serviceOrder.deliver();
         serviceOrderDao.update(serviceOrder);
     }
