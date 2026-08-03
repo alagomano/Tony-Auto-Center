@@ -31,6 +31,7 @@ public class ServiceOrder {
         this.problemDescription = problemDescription;
         this.observations = observations;
         this.vehicle = vehicle;
+        this.status = OrderStatus.OPEN;
     }
 
 

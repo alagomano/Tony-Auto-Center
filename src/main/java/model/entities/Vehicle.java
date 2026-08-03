@@ -1,9 +1,10 @@
 package model.entities;
 
 import model.exception.DomainException;
-import model.exception.ServiceException;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Vehicle {
@@ -78,10 +79,6 @@ public class Vehicle {
         return serviceOrders;
     }
 
-    public void setServiceOrders(List<ServiceOrder> serviceOrders) {
-        this.serviceOrders = serviceOrders;
-    }
-
     public void addServiceOrder(ServiceOrder order){
         if(order == null){
             throw new DomainException("Ordem de serviço inválida.");
@@ -98,8 +95,7 @@ public class Vehicle {
         return order;
     }
     public List<ServiceOrder> getHistory(){
-//        Manda uma cópia da lista.
-        return new ArrayList<>(serviceOrders);
+        return Collections.unmodifiableList(serviceOrders);
     }
 
     @Override
@@ -110,8 +106,6 @@ public class Vehicle {
                 ", brand='" + brand + '\'' +
                 ", model='" + model + '\'' +
                 ", year=" + year +
-                ", client=" + client +
-                ", serviceOrders=" + serviceOrders +
                 '}';
     }
 }

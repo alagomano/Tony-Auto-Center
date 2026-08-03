@@ -19,9 +19,18 @@ public class VehicleService {
     public VehicleService(){
     }
 
-    private void validateVehicle(Vehicle vehicle){
+    private void validateVehicleExists(Vehicle vehicle){
         if(vehicle == null){
-            throw new ServiceException("Veículo inválido.");
+            throw new ServiceException("Veículo não encontrado.");
+        }
+    }
+
+    private void validateVehicle(Vehicle vehicle){
+        if(vehicle.getClient() == null){
+            throw new ServiceException("Veículo com cliente inválido.");
+        }
+        if(vehicle.getPlate() == null || vehicle.getPlate().isBlank()){
+            throw new ServiceException("Placa do veículo inválida.");
         }
     }
 
@@ -37,54 +46,49 @@ public class VehicleService {
         }
     }
 
-    public void addOrderToVehicle(Long vehicleId, ServiceOrder order){
-        if (vehicleId == null){
-            throw new ServiceException("Id do veículo inválido.");
-        } if (order == null){
-            throw new ServiceException("Order inválida.");
-        }
+    public ServiceOrder openServiceOrder(Long vehicleId, String descriptionProblem, String observations){
+        validateID(vehicleId);
         Vehicle vehicle = findVehicleById(vehicleId);
-
-        vehicle.addServiceOrder(order);
+        ServiceOrder order = vehicle.openServiceOrder(descriptionProblem, observations);
         serviceOrderDao.insert(order);
+        return order;
     }
 
-    public void registerVehicle(String cpf, Vehicle vehicle){
-        validateVehicle(vehicle);
-        Client client = clientService.findClientByCpf(cpf);
+    public void registerVehicle(Long clientId, Vehicle vehicle){
+        validateID(clientId);
+        if(vehicle == null){
+            throw new ServiceException("Veículo inválido.");
+        }
+        Client client = clientService.findClientById(clientId);
         vehicle.setClient(client);
+        validateVehicle(vehicle);
+        client.addVehicle(vehicle);
         vehicleDao.insert(vehicle);
     }
 
     public void updateVehicle(Vehicle vehicle){
-        if(vehicle == null){
-            throw new ServiceException("Veículo inválido.");
-        } if (vehicle.getId() == null){
-            throw new ServiceException("ID do veículo inválido.");
-        }
+        validateVehicleExists(vehicle);
+        validateID(vehicle.getId());
+        validateVehicle(vehicle);
         vehicleDao.update(vehicle);
     }
 
-    public void removeVehicle(Vehicle vehicle){
-        if(vehicle == null){
-            throw new ServiceException("Veículo inválido.");
-        } if (vehicle.getId() == null){
-            throw new ServiceException("ID do veículo inválido.");
-        }
-        vehicleDao.deleteById(vehicle.getId());
+    public void removeVehicle(Long vehicleId){
+        validateID(vehicleId);
+        vehicleDao.deleteById(vehicleId);
     }
 
     public Vehicle findVehicleById(Long vehicleId){
         validateID(vehicleId);
         Vehicle vehicle = vehicleDao.findById(vehicleId);
-        validateVehicle(vehicle);
+        validateVehicleExists(vehicle);
 
         return vehicle;
     }
-    public Vehicle findVehicle(String plate){
+    public Vehicle findVehicleByPlate(String plate){
         validatePlate(plate);
         Vehicle vehicle = vehicleDao.findByPlate(plate);
-        validateVehicle(vehicle);
+        validateVehicleExists(vehicle);
 
         return vehicle;
     }
@@ -98,7 +102,5 @@ public class VehicleService {
     public List<Vehicle> getVehicles(){
         return vehicleDao.findAll();
     }
-
-
 
 }
