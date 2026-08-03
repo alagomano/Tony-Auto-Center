@@ -9,6 +9,7 @@ import model.exception.ServiceException;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class ClientService {
 
@@ -29,7 +30,7 @@ public class ClientService {
 
     private void validateClientExists(Client client){
         if(client == null){
-            throw new ServiceException("Cliente inválido.");
+            throw new ServiceException("Cliente não encontrado.");
         }
     }
 
@@ -47,7 +48,13 @@ public class ClientService {
 
     private void validateVehicleExists(Vehicle vehicle){
         if (vehicle == null){
-            throw new ServiceException("Veículo inválido.");
+            throw new ServiceException("Veículo não encontrado.");
+        }
+    }
+
+    private void validatePlate(String plate){
+        if(plate == null || plate.isBlank()){
+            throw new ServiceException("Placa inválida.");
         }
     }
 
@@ -92,6 +99,16 @@ public class ClientService {
         vehicles.forEach(client::addVehicle);
 
         return client;
+    }
+
+    public void removeVehicle(Long clientId, String plate){
+        validatePlate(plate);
+        Client client = findClientById(clientId);
+        Vehicle vehicle = vehicleDao.findByPlate(plate);
+
+        client.removeVehicle(vehicle.getPlate());
+        vehicleDao.deleteById(vehicle.getId());
+
     }
 
     public Collection<Vehicle> getVehiclesByClient(Client client){
