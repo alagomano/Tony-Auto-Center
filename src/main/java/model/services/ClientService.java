@@ -9,7 +9,6 @@ import model.exception.ServiceException;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public class ClientService {
 
@@ -78,10 +77,9 @@ public class ClientService {
         clientDao.update(client);
     }
 
-    public void removeClient(Client client){
-        validateClientExists(client);
-        validateID(client.getId());
-        clientDao.deleteById(client.getId());
+    public void removeClient(Long clientId){
+        validateID(clientId);
+        clientDao.deleteById(clientId);
     }
 
     public Client findClientByCpf(String cpf){
@@ -105,16 +103,16 @@ public class ClientService {
         validatePlate(plate);
         Client client = findClientById(clientId);
         Vehicle vehicle = vehicleDao.findByPlate(plate);
+        validateVehicleExists(vehicle);
 
         client.removeVehicle(vehicle.getPlate());
         vehicleDao.deleteById(vehicle.getId());
 
     }
 
-    public Collection<Vehicle> getVehiclesByClient(Client client){
-        validateClientExists(client);
-        validateID(client.getId());
-        client = findClientById(client.getId());
+    public Collection<Vehicle> getVehiclesByClient(Long clientId){
+        validateID(clientId);
+        Client client = findClientById(clientId);
 
         return client.getVehicles();
     }
