@@ -1,9 +1,11 @@
 package application.tests;
 
 import application.Main;
+import model.entities.Client;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
 import model.exception.ServiceException;
+import model.services.ClientService;
 import model.services.VehicleService;
 
 import java.util.Collection;
@@ -12,29 +14,28 @@ import java.util.Scanner;
 public class TestVehicle {
     private static final Scanner scanner = Main.SCANNER;
     private static final VehicleService vehicleService = new VehicleService();
+    private static final ClientService clientService = new ClientService();
 
     private static void register(){
-        try {
-            Vehicle vehicle = new Vehicle();
-            System.out.print("Placa: ");
-            vehicle.setPlate(scanner.nextLine());
-            System.out.print("Marca (Fiat, Renault,...): ");
-            vehicle.setBrand(scanner.nextLine());
-            System.out.print("Modelo: ");
-            vehicle.setModel(scanner.nextLine());
-            System.out.print("Ano do Carro: ");
-            vehicle.setYear(scanner.nextInt());
-            scanner.nextLine();
+        Vehicle vehicle = new Vehicle();
+        System.out.print("Placa: ");
+        vehicle.setPlate(scanner.nextLine());
+        System.out.print("Marca (Fiat, Renault,...): ");
+        vehicle.setBrand(scanner.nextLine());
+        System.out.print("Modelo: ");
+        vehicle.setModel(scanner.nextLine());
+        System.out.print("Ano do Carro: ");
+        vehicle.setYear(scanner.nextInt());
+        scanner.nextLine();
 
-            System.out.println();
-            System.out.print("Digite CPF do Dono do carro (Deve ser um cliente cadastrado): ");
-            String cpf = scanner.nextLine();
+        System.out.println();
+        System.out.print("Digite CPF do Dono do carro (Deve ser um cliente cadastrado): ");
+        String cpf = scanner.nextLine();
 
-            vehicleService.registerVehicle(cpf, vehicle);
-            System.out.println("Veículo cadastrado com Sucesso.");
-        }catch (ServiceException e){
-            throw new ServiceException("Não foi possível cadastrar veículo.");
-        }
+        Client client = clientService.findClientByCpf(cpf);
+        vehicleService.registerVehicle(client.getId(), vehicle);
+        System.out.println("Veículo cadastrado com Sucesso.");
+
     }
 
     private static void update(String plate){
@@ -53,58 +54,50 @@ public class TestVehicle {
             option = scanner.nextInt();
             scanner.nextLine();
 
-            try {
-                switch (option) {
-                    case 1:
-                        System.out.print("Digite o nova Marca:");
-                        String brand = scanner.nextLine();
-                        vehicle.setBrand(brand);
-                        vehicleService.updateVehicle(vehicle);
-                        System.out.println("Marca atualizado.");
-                        System.out.println();
-                        break;
-                    case 2:
-                        System.out.print("Digite o novo Modelo: ");
-                        String model = scanner.nextLine();
-                        vehicle.setModel(model);
-                        vehicleService.updateVehicle(vehicle);
-                        System.out.println("Modelo atualizado.");
-                        System.out.println();
-                        break;
-                    case 3:
-                        System.out.print("Digite o novo Ano do Carro: ");
-                        int year = scanner.nextInt();
-                        scanner.nextLine();
-                        vehicle.setYear(year);
-                        vehicleService.updateVehicle(vehicle);
-                        System.out.println("Ano do Carro atualizado.");
-                        System.out.println();
-                        break;
-                    case 4:
-                        System.out.println("Voltando...");
-                        System.out.println();
-                        break;
-                    default:
-                        System.out.println("Opção inválida.");
-                }
-            }catch (ServiceException e){
-                throw new ServiceException("Não foi possível atualizar veículo.");
+            switch (option) {
+                case 1:
+                    System.out.print("Digite o nova Marca:");
+                    String brand = scanner.nextLine();
+                    vehicle.setBrand(brand);
+                    vehicleService.updateVehicle(vehicle);
+                    System.out.println("Marca atualizado.");
+                    System.out.println();
+                    break;
+                case 2:
+                    System.out.print("Digite o novo Modelo: ");
+                    String model = scanner.nextLine();
+                    vehicle.setModel(model);
+                    vehicleService.updateVehicle(vehicle);
+                    System.out.println("Modelo atualizado.");
+                    System.out.println();
+                    break;
+                case 3:
+                    System.out.print("Digite o novo Ano do Carro: ");
+                    int year = scanner.nextInt();
+                    scanner.nextLine();
+                    vehicle.setYear(year);
+                    vehicleService.updateVehicle(vehicle);
+                    System.out.println("Ano do Carro atualizado.");
+                    System.out.println();
+                    break;
+                case 4:
+                    System.out.println("Voltando...");
+                    System.out.println();
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
             }
         }
     }
 
     private static void remove(String plate){
-        try {
-            Vehicle vehicle = findByPlate(plate);
-            vehicleService.removeVehicle(vehicle);
-            System.out.println("Veículo remoivo com sucesso.");
-            System.out.println(vehicle);
-        }catch (ServiceException e){
-            throw new ServiceException("Não foi possível remover veículo.");
-        }
+        Vehicle vehicle = findByPlate(plate);
+        vehicleService.removeVehicle(vehicle.getId());
+        System.out.println("Veículo remoivo com sucesso.");
+        System.out.println(vehicle);
     }
     private static Vehicle findByPlate(String plate){
-        return vehicleService.findVehicle(plate);
+        return vehicleService.findVehicleByPlate(plate);
     }
 
     private static void findAll(){

@@ -3,6 +3,7 @@ package application;
 import application.tests.TestClient;
 import application.tests.TestServiceOrder;
 import application.tests.TestVehicle;
+import model.exception.DomainException;
 
 import java.util.Scanner;
 
@@ -24,22 +25,25 @@ public class Main { public static final Scanner SCANNER = new Scanner(System.in)
             System.out.print("Escolha uma opção: ");
             option = SCANNER.nextInt();
             SCANNER.nextLine();
-
-            switch (option){
-                case 1:
-                    TestClient.client();
-                    break;
-                case 2:
-                    TestVehicle.vehicle();
-                    break;
-                case 3:
-                    TestServiceOrder.serviceOrder();
-                    break;
-                case 4:
-                    System.out.println("Saindo...");
-                    break;
-                default:
-                    break;
+            try {
+                switch (option) {
+                    case 1:
+                        TestClient.client();
+                        break;
+                    case 2:
+                        TestVehicle.vehicle();
+                        break;
+                    case 3:
+                        TestServiceOrder.serviceOrder();
+                        break;
+                    case 4:
+                        System.out.println("Saindo...");
+                        break;
+                    default:
+                        break;
+                }
+            }catch (DomainException e){
+                System.out.println("Erro: " + e.getMessage());
             }
         }
 

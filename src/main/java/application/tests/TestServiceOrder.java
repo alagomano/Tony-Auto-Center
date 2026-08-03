@@ -42,7 +42,7 @@ public class TestServiceOrder {
     }
 
     private static void updateStatus(String plate, int option){
-        Vehicle vehicle = vehicleService.findVehicle(plate);
+        Vehicle vehicle = vehicleService.findVehicleByPlate(plate);
 
         System.out.println("Lista de ordens do veículo de placa: " + vehicle.getPlate());
         vehicleService.getOrders(vehicle.getId()).forEach(System.out::println);
@@ -60,26 +60,22 @@ public class TestServiceOrder {
     }
 
     private static void register(){
-        try {
-            ServiceOrder order = new ServiceOrder();
-            System.out.print("Descrição do problema: ");
-            order.setProblemDescription(scanner.nextLine());
-            System.out.print("Observação: ");
-            order.setObservations(scanner.nextLine());
+        ServiceOrder order = new ServiceOrder();
+        System.out.print("Descrição do problema: ");
+        order.setProblemDescription(scanner.nextLine());
+        System.out.print("Observação: ");
+        order.setObservations(scanner.nextLine());
 
-            System.out.println();
+        System.out.println();
 
-            System.out.print("Placa do Veículo (Veículo tem que está cadastrado): ");
-            String plate = scanner.nextLine();
+        System.out.print("Placa do Veículo (Veículo tem que está cadastrado): ");
+        String plate = scanner.nextLine();
 
-            Vehicle vehicle = vehicleService.findVehicle(plate);
+        Vehicle vehicle = vehicleService.findVehicleByPlate(plate);
 
-            order = serviceOrderService.createServiceOrder(vehicle, order);
-            System.out.println("Ordem se serviço cadastrada com Sucesso.");
-            System.out.println(order);
-        }catch (ServiceException e){
-            throw new ServiceException("Não foi possível cadastrar ordem de serviço.");
-        }
+        order = serviceOrderService.createServiceOrder(vehicle, order);
+        System.out.println("Ordem se serviço cadastrada com Sucesso.");
+        System.out.println(order);
     }
 
     private static void update(Long orderId){
@@ -97,48 +93,40 @@ public class TestServiceOrder {
             option = scanner.nextInt();
             scanner.nextLine();
 
-            try {
-                switch (option) {
-                    case 1:
-                        System.out.print("Digite a nova Decrição do Problema:");
-                        order.setProblemDescription(scanner.nextLine());
-                        serviceOrderService.updateServiceOrder(order);
-                        System.out.println("Descrição do problema atualizada.");
-                        System.out.println();
-                        break;
-                    case 2:
-                        System.out.print("Digite a nova Observação: ");
-                        order.setObservations(scanner.nextLine());
-                        serviceOrderService.updateServiceOrder(order);
-                        System.out.println("Observações atualizadas.");
-                        System.out.println();
-                        break;
-                    case 3:
-                        System.out.println("Voltando...");
-                        System.out.println();
-                        break;
-                    default:
-                        System.out.println("Opção inválida.");
-                }
-            }catch (ServiceException e){
-                throw new ServiceException("Não foi possível atualizar a ordem de serviço.");
+            switch (option) {
+                case 1:
+                    System.out.print("Digite a nova Decrição do Problema:");
+                    order.setProblemDescription(scanner.nextLine());
+                    serviceOrderService.updateServiceOrder(order);
+                    System.out.println("Descrição do problema atualizada.");
+                    System.out.println();
+                    break;
+                case 2:
+                    System.out.print("Digite a nova Observação: ");
+                    order.setObservations(scanner.nextLine());
+                    serviceOrderService.updateServiceOrder(order);
+                    System.out.println("Observações atualizadas.");
+                    System.out.println();
+                    break;
+                case 3:
+                    System.out.println("Voltando...");
+                    System.out.println();
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
             }
         }
     }
 
     private static void remove(Long serviceOrderId){
-        try {
-            ServiceOrder order = serviceOrderService.findServiceOrderById(serviceOrderId);
-            serviceOrderService.deleteServiceOrderById(serviceOrderId);
-            System.out.println("Removido com sucesso.");
-            System.out.println(order);
-        }catch (ServiceException e){
-            throw new ServiceException("Não foi possível remover ordem de serviço.");
-        }
+        ServiceOrder order = serviceOrderService.findServiceOrderById(serviceOrderId);
+        serviceOrderService.deleteServiceOrderById(serviceOrderId);
+        System.out.println("Removido com sucesso.");
+        System.out.println(order);
     }
 
     private static void findOrdersByPlate(String plate){
-        Vehicle vehicle = vehicleService.findVehicle(plate);
+        Vehicle vehicle = vehicleService.findVehicleByPlate(plate);
         Collection<ServiceOrder> orders = vehicleService.getOrders(vehicle.getId());
         System.out.println("Lista de orderns de Serviço na ordem da data de entrada: ");
         orders.forEach(System.out::println);
@@ -150,116 +138,110 @@ public class TestServiceOrder {
     }
 
     private static void addItem(String plate){
-        try {
-            Vehicle vehicle = vehicleService.findVehicle(plate);
+        Vehicle vehicle = vehicleService.findVehicleByPlate(plate);
 
-            System.out.println("Lista de ordens do veículo de placa: " + vehicle.getPlate());
-            vehicleService.getOrders(vehicle.getId()).forEach(System.out::println);
+        System.out.println("Lista de ordens do veículo de placa: " + vehicle.getPlate());
+        vehicleService.getOrders(vehicle.getId()).forEach(System.out::println);
 
-            System.out.println();
-            System.out.print("Em qual ordem de serviço deseja adicionar item(informe o id da ordem): ");
-            ServiceOrder order = serviceOrderService.findServiceOrderById(scanner.nextLong());
-            scanner.nextLine();
+        System.out.println();
+        System.out.print("Em qual ordem de serviço deseja adicionar item(informe o id da ordem): ");
+        ServiceOrder order = serviceOrderService.findServiceOrderById(scanner.nextLong());
+        scanner.nextLine();
 
-            ServiceItem item = new ServiceItem();
-            System.out.print("Descrição do item (Ex:Óleo 5w30 Lubrax): ");
-            item.setDescription(scanner.nextLine());
-            System.out.print("Quantidade do item: ");
-            item.setQuantity(scanner.nextInt());
-            scanner.nextLine();
-            System.out.print("Valor unitário do item: ");
-            item.setUnitValue(BigDecimal.valueOf(scanner.nextDouble()));
-            scanner.nextLine();
+        ServiceItem item = new ServiceItem();
+        System.out.print("Descrição do item (Ex:Óleo 5w30 Lubrax): ");
+        item.setDescription(scanner.nextLine());
+        System.out.print("Quantidade do item: ");
+        item.setQuantity(scanner.nextInt());
+        scanner.nextLine();
+        System.out.print("Valor unitário do item: ");
+        item.setUnitValue(BigDecimal.valueOf(scanner.nextDouble()));
+        scanner.nextLine();
 
-            serviceOrderService.addItemToOrder(order.getId(), item);
+        serviceOrderService.addItemToOrder(order.getId(), item);
 
-            order = serviceOrderService.findServiceOrderById(order.getId());
-            System.out.println("Lista de itens da ordem de serviço " + order.getProblemDescription());
-            order.getItems().forEach(System.out::println);
-            System.out.println("Total a pagar: " + order.getTotalValue());
-            System.out.println();
-        }catch (ServiceException e){
-            throw new ServiceException("Não foi possível adicionar item à ordem.");
-        }
+        order = serviceOrderService.findServiceOrderById(order.getId());
+        System.out.println("Lista de itens da ordem de serviço " + order.getProblemDescription());
+        order.getItems().forEach(System.out::println);
+        System.out.println("Total a pagar: " + order.getTotalValue());
+        System.out.println();
+
     }
 
     private static void updateItem(String plate){
-        try {
-            Vehicle vehicle = vehicleService.findVehicle(plate);
+        Vehicle vehicle = vehicleService.findVehicleByPlate(plate);
 
-            System.out.println("Lista de ordens do veículo de placa: " + vehicle.getPlate());
-            vehicleService.getOrders(vehicle.getId()).forEach(System.out::println);
+        System.out.println("Lista de ordens do veículo de placa: " + vehicle.getPlate());
+        vehicleService.getOrders(vehicle.getId()).forEach(System.out::println);
 
-            System.out.println();
-            System.out.print("Em qual ordem de serviço deseja atualizar o item(informe o id da ordem): ");
-            ServiceOrder order = serviceOrderService.findServiceOrderById(scanner.nextLong());
+        System.out.println();
+        System.out.print("Em qual ordem de serviço deseja atualizar o item(informe o id da ordem): ");
+        ServiceOrder order = serviceOrderService.findServiceOrderById(scanner.nextLong());
 
-            System.out.println();
+        System.out.println();
 
-            System.out.println("Lista de itens da ordem de id: " + order.getId());
-            System.out.println("===== " + order.getProblemDescription() + " =====");
-            serviceOrderService.getItemsByOrder(order.getId()).forEach(System.out::println);
+        System.out.println("Lista de itens da ordem de id: " + order.getId());
+        System.out.println("===== " + order.getProblemDescription() + " =====");
+        serviceOrderService.getItemsByOrder(order.getId()).forEach(System.out::println);
 
-            System.out.println();
-            System.out.print("Digite o id do item ao qual deseja atualizar: ");
-            Long itemId = scanner.nextLong();
-            ServiceItem item = serviceOrderService.findServiceItemById(order.getId(), itemId);
-            int option = 0;
-            while (option != 4) {
-                System.out.println("""
-                        Qual campo deseja atualizar?
-                            1. Descrição do item
-                            2. Quantidade
-                            3. Valor unitário
-                            4. Voltar
-                        ==============================
-                        """);
-                System.out.print("Escolha uma opção: ");
-                option = scanner.nextInt();
-                scanner.nextLine();
+        System.out.println();
+        System.out.print("Digite o id do item ao qual deseja atualizar: ");
+        Long itemId = scanner.nextLong();
+        ServiceItem item = serviceOrderService.findServiceItemById(order.getId(), itemId);
+        int option = 0;
+        while (option != 4) {
+            System.out.println("""
+                    Qual campo deseja atualizar?
+                        1. Descrição do item
+                        2. Quantidade
+                        3. Valor unitário
+                        4. Voltar
+                    ==============================
+                    """);
+            System.out.print("Escolha uma opção: ");
+            option = scanner.nextInt();
+            scanner.nextLine();
 
-                switch (option) {
-                    case 1:
-                        System.out.print("Descrição do item (Ex:Óleo 5w30 Lubrax): ");
-                        item.setDescription(scanner.nextLine());
-                        serviceOrderService.updateServiceItem(order.getId(), item);
-                        System.out.println("Descrição do problema atualizada.");
-                        System.out.println();
-                        break;
-                    case 2:
-                        System.out.print("Quantidade do item: ");
-                        item.setQuantity(scanner.nextInt());
-                        scanner.nextLine();
-                        serviceOrderService.updateServiceItem(order.getId(), item);
-                        System.out.println("Quatidade atualizada.");
-                        System.out.println();
-                        break;
-                    case 3:
-                        System.out.print("Valor unitário do item: ");
-                        item.setUnitValue(BigDecimal.valueOf(scanner.nextDouble()));
-                        serviceOrderService.updateServiceItem(order.getId(), item);
-                        System.out.println("Valor unitário atualizado...");
-                        System.out.println();
-                        break;
-                    case 4:
-                        System.out.println("Voltando...");
-                        break;
-                    default:
-                        System.out.println("Opção inválida.");
-                }
+            switch (option) {
+                case 1:
+                    System.out.print("Descrição do item (Ex:Óleo 5w30 Lubrax): ");
+                    item.setDescription(scanner.nextLine());
+                    serviceOrderService.updateServiceItem(order.getId(), item);
+                    System.out.println("Descrição do problema atualizada.");
+                    System.out.println();
+                    break;
+                case 2:
+                    System.out.print("Quantidade do item: ");
+                    item.setQuantity(scanner.nextInt());
+                    scanner.nextLine();
+                    serviceOrderService.updateServiceItem(order.getId(), item);
+                    System.out.println("Quatidade atualizada.");
+                    System.out.println();
+                    break;
+                case 3:
+                    System.out.print("Valor unitário do item: ");
+                    item.setUnitValue(BigDecimal.valueOf(scanner.nextDouble()));
+                    serviceOrderService.updateServiceItem(order.getId(), item);
+                    System.out.println("Valor unitário atualizado...");
+                    System.out.println();
+                    break;
+                case 4:
+                    System.out.println("Voltando...");
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
             }
-
-            System.out.println("Nova Lista de itens da ordem de serviço " + order.getProblemDescription());
-            order = serviceOrderService.findServiceOrderById(order.getId());
-            order.getItems().forEach(System.out::println);
-            System.out.println();
-        }catch (ServiceException e){
-            throw new ServiceException("Não foi possível atualizar item.");
         }
+
+        System.out.println("Nova Lista de itens da ordem de serviço " + order.getProblemDescription());
+        order = serviceOrderService.findServiceOrderById(order.getId());
+        order.getItems().forEach(System.out::println);
+        System.out.println();
+
     }
 
     private static void itemsByServiceOrder(String plate){
-        Vehicle vehicle = vehicleService.findVehicle(plate);
+        Vehicle vehicle = vehicleService.findVehicleByPlate(plate);
 
         System.out.println("Lista de ordens do veículo de placa: " + vehicle.getPlate());
         vehicleService.getOrders(vehicle.getId()).forEach(System.out::println);
@@ -277,7 +259,7 @@ public class TestServiceOrder {
     }
 
     private static void removeItem(String plate){
-        Vehicle vehicle = vehicleService.findVehicle(plate);
+        Vehicle vehicle = vehicleService.findVehicleByPlate(plate);
 
         System.out.println("Lista de ordens do veículo de placa: " + vehicle.getPlate());
         vehicleService.getOrders(vehicle.getId()).forEach(System.out::println);

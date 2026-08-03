@@ -2,6 +2,8 @@ package application.tests;
 
 import application.Main;
 import model.entities.Client;
+import model.exception.DbException;
+import model.exception.DomainException;
 import model.exception.ServiceException;
 import model.services.ClientService;
 
@@ -13,23 +15,17 @@ public class TestClient {
     private static final Scanner scanner = Main.SCANNER;
 
     private static void register(){
-        try {
-            Client client = new Client();
-            System.out.print("Nome: ");
-            client.setName(scanner.nextLine());
-            System.out.print("CPF: ");
-            client.setCpf(scanner.nextLine());
-            System.out.print("Telefone: ");
-            client.setPhone(scanner.nextLine());
-            System.out.print("Endereço: ");
-            client.setAddress(scanner.nextLine());
-
-            clientService.registerClient(client);
-
-            System.out.println("Cliente cadastrado com Sucesso.");
-        }catch (ServiceException e){
-            throw new ServiceException("Não foi possível cadastrar cliente.");
-        }
+        Client client = new Client();
+        System.out.print("Nome: ");
+        client.setName(scanner.nextLine());
+        System.out.print("CPF: ");
+        client.setCpf(scanner.nextLine());
+        System.out.print("Telefone: ");
+        client.setPhone(scanner.nextLine());
+        System.out.print("Endereço: ");
+        client.setAddress(scanner.nextLine());
+        clientService.registerClient(client);
+        System.out.println("Cliente cadastrado com Sucesso.");
     }
 
     private static Client findByCpf(String cpf){
@@ -59,53 +55,46 @@ public class TestClient {
             option = scanner.nextInt();
             scanner.nextLine();
 
-            try {
-                switch (option) {
-                    case 1:
-                        System.out.print("Digite o novo Nome:");
-                        String name = scanner.nextLine();
-                        client.setName(name);
-                        clientService.updateClient(client);
-                        System.out.println("Nome atualizado.");
-                        System.out.println();
-                        break;
-                    case 2:
-                        System.out.print("Digite o novo número de telefone: ");
-                        String phone = scanner.nextLine();
-                        client.setPhone(phone);
-                        clientService.updateClient(client);
-                        System.out.println("Telefone atualizado.");
-                        System.out.println();
-                        break;
-                    case 3:
-                        System.out.print("Digite o novo endereço: ");
-                        String address = scanner.nextLine();
-                        client.setAddress(address);
-                        clientService.updateClient(client);
-                        System.out.println("Endereço atualizado.");
-                        System.out.println();
-                        break;
-                    case 4:
-                        System.out.println("Voltando...");
-                        System.out.println();
-                        break;
-                    default:
-                        System.out.println("Opção inválida.");
-                }
-            }catch (ServiceException e){
-                throw new ServiceException("Não foi possível atualizar dados do cliente.");
+            switch (option) {
+                case 1:
+                    System.out.print("Digite o novo Nome:");
+                    String name = scanner.nextLine();
+                    client.setName(name);
+                    clientService.updateClient(client);
+                    System.out.println("Nome atualizado.");
+                    System.out.println();
+                    break;
+                case 2:
+                    System.out.print("Digite o novo número de telefone: ");
+                    String phone = scanner.nextLine();
+                    client.setPhone(phone);
+                    clientService.updateClient(client);
+                    System.out.println("Telefone atualizado.");
+                    System.out.println();
+                    break;
+                case 3:
+                    System.out.print("Digite o novo endereço: ");
+                    String address = scanner.nextLine();
+                    client.setAddress(address);
+                    clientService.updateClient(client);
+                    System.out.println("Endereço atualizado.");
+                    System.out.println();
+                    break;
+                case 4:
+                    System.out.println("Voltando...");
+                    System.out.println();
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
             }
         }
     }
 
     private static void remove(String cpf){
-        try {
-            Client client = clientService.findClientByCpf(cpf);
-            System.out.println("Cliente removido: " + client);
-            clientService.removeClient(client);
-        }catch (ServiceException e){
-            throw new ServiceException("Não foi possível remover cliente.");
-        }
+        Client client = clientService.findClientByCpf(cpf);
+        System.out.println("Cliente removido: " + client);
+        clientService.removeClient(client.getId());
+
     }
 
     public static void client(){
@@ -125,7 +114,6 @@ public class TestClient {
             System.out.print("Escolha uma opção: ");
             option = scanner.nextInt();
             scanner.nextLine();
-
             switch (option){
                 case 1:
                     register();
