@@ -31,7 +31,9 @@ public class ServiceOrder {
         this.problemDescription = problemDescription;
         this.observations = observations;
         this.vehicle = vehicle;
+        this.entryDate = LocalDateTime.now();
         this.status = OrderStatus.OPEN;
+        this.totalValue = BigDecimal.ZERO;
     }
 
 
@@ -107,7 +109,12 @@ public class ServiceOrder {
         }
         item.setServiceOrder(this);
         items.add(item);
-        this.totalValue = calculateTotal();
+        totalValue = calculateTotal();
+    }
+
+    public void deleteItem(ServiceItem item){
+        items.remove(item);
+        totalValue = calculateTotal();
     }
 
     private BigDecimal calculateTotal(){
@@ -153,7 +160,6 @@ public class ServiceOrder {
                 " | Observação: " + observations +
                 " | " + status +
                 " | Valor Total: " + totalValue;
-
     }
 
 

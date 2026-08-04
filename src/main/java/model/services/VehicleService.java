@@ -6,6 +6,7 @@ import model.dao.VehicleDao;
 import model.entities.Client;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
+import model.enums.OrderStatus;
 import model.exception.ServiceException;
 
 import java.util.List;
@@ -49,6 +50,11 @@ public class VehicleService {
     public ServiceOrder openServiceOrder(Long vehicleId, String descriptionProblem, String observations){
         validateID(vehicleId);
         Vehicle vehicle = findVehicleById(vehicleId);
+
+        if (vehicle.hasActiveServiceOrder()){
+            throw new ServiceException("Veículo já possui uma ordem de serviço ativa.");
+        }
+
         ServiceOrder order = vehicle.openServiceOrder(descriptionProblem, observations);
         serviceOrderDao.insert(order);
         return order;

@@ -1,5 +1,6 @@
 package model.entities;
 
+import model.enums.OrderStatus;
 import model.exception.DomainException;
 
 import java.util.ArrayList;
@@ -93,6 +94,10 @@ public class Vehicle {
         addServiceOrder(order);
 
         return order;
+    }
+
+    public boolean hasActiveServiceOrder() {
+        return serviceOrders.stream().anyMatch(order -> order.getStatus() == OrderStatus.OPEN || order.getStatus() == OrderStatus.IN_PROGRESS);
     }
     public List<ServiceOrder> getHistory(){
         return Collections.unmodifiableList(serviceOrders);

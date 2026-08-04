@@ -11,7 +11,6 @@ import model.exception.ServiceException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 
 public class ServiceOrderService {
@@ -38,26 +37,6 @@ public class ServiceOrderService {
         if (id == null || id < 0){
             throw new ServiceException("Id inválido.");
         }
-    }
-
-    public ServiceOrder createServiceOrder(Vehicle vehicle, ServiceOrder serviceOrder){
-
-        validateVehicle(vehicle);
-        validateServiceOrder(serviceOrder);
-
-        boolean verificationOS = vehicle.getHistory().stream().anyMatch(os -> os.getStatus() == OrderStatus.OPEN || os.getStatus() == OrderStatus.IN_PROGRESS);
-
-        if (verificationOS){
-            throw new ServiceException("Veículo já possui uma ordem de serviço ativa.");
-        }
-
-        serviceOrder.setVehicle(vehicle);
-        serviceOrder.setEntryDate(LocalDateTime.now());
-        serviceOrder.setStatus(OrderStatus.OPEN);
-        serviceOrder.setTotalValue(BigDecimal.ZERO);
-        serviceOrderDao.insert(serviceOrder);
-
-        return serviceOrder;
     }
 
     public void addItemToOrder(Long serviceOrderId, ServiceItem item){
@@ -124,8 +103,10 @@ public class ServiceOrderService {
 
     public void deleteServiceItemById(Long serviceOrderId, Long serviceItemId){
         validateID(serviceItemId);
-        findServiceItemById(serviceOrderId, serviceItemId);
+        ServiceOrder order = findServiceOrderById(serviceOrderId);
+        ServiceItem item = findServiceItemById(serviceOrderId, serviceItemId);
         serviceItemDao.deleteById(serviceItemId);
+        order.deleteItem(item);
     }
 
     public void startServiceOrder(Long serviceOrderId){
