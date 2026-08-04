@@ -1,7 +1,6 @@
 package model.entities;
 
 import model.exception.DomainException;
-import model.exception.ServiceException;
 
 import java.util.*;
 

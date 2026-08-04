@@ -3,7 +3,8 @@ package application;
 import application.tests.TestClient;
 import application.tests.TestServiceOrder;
 import application.tests.TestVehicle;
-import model.exception.DomainException;
+import model.exception.DbException;
+import model.exception.ServiceException;
 
 import java.util.Scanner;
 
@@ -42,7 +43,7 @@ public class Main { public static final Scanner SCANNER = new Scanner(System.in)
                     default:
                         break;
                 }
-            }catch (DomainException e){
+            }catch (ServiceException | DbException e){
                 System.out.println("Erro: " + e.getMessage());
             }
         }

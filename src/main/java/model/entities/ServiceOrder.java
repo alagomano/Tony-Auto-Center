@@ -1,6 +1,7 @@
 package model.entities;
 
 import model.enums.OrderStatus;
+import model.exception.DomainException;
 import model.exception.ServiceException;
 
 import java.math.BigDecimal;
@@ -105,7 +106,7 @@ public class ServiceOrder {
     public void addItem(ServiceItem item){
 
         if(item == null){
-            throw new ServiceException("Item de serviço inválido");
+            throw new DomainException("Item de serviço inválido");
         }
         item.setServiceOrder(this);
         items.add(item);
@@ -128,7 +129,7 @@ public class ServiceOrder {
 
     public void start(){
         if(status != OrderStatus.OPEN){
-            throw new ServiceException("Ordem não pode ser iniciada.");
+            throw new DomainException("Ordem não pode ser iniciada.");
         }
 
         status = OrderStatus.IN_PROGRESS;
@@ -136,7 +137,7 @@ public class ServiceOrder {
 
     public void deliver(){
         if(status != OrderStatus.FINISHED){
-            throw new ServiceException("Ordem não pode ser entregue.");
+            throw new DomainException("Ordem não pode ser entregue.");
         }
 
         status = OrderStatus.DELIVERED;
@@ -145,7 +146,7 @@ public class ServiceOrder {
     public void close(){
 
         if(status != OrderStatus.IN_PROGRESS){
-            throw new ServiceException("A ordem precisa estar em andamento.");
+            throw new DomainException("A ordem precisa estar em andamento.");
         }
 
         this.status = OrderStatus.FINISHED;

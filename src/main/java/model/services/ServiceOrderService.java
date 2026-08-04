@@ -6,22 +6,14 @@ import model.dao.ServiceOrderDao;
 import model.entities.ServiceItem;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
-import model.enums.OrderStatus;
 import model.exception.ServiceException;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class ServiceOrderService {
     private final ServiceOrderDao serviceOrderDao = DaoFactory.createServiceOrderDao();
     private final ServiceItemDao serviceItemDao = DaoFactory.createServiceItemDao();
 
-    private void validateVehicle(Vehicle vehicle){
-        if(vehicle == null) {
-            throw new ServiceException("Veículo inválido.");
-        }
-    }
     private void validateServiceOrder(ServiceOrder serviceOrder){
         if (serviceOrder == null) {
             throw new ServiceException("Ordem de serviço inválida.");

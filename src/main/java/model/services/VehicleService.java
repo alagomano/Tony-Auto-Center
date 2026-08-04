@@ -6,7 +6,6 @@ import model.dao.VehicleDao;
 import model.entities.Client;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
-import model.enums.OrderStatus;
 import model.exception.ServiceException;
 
 import java.util.List;
