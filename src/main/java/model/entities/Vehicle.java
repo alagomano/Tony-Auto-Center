@@ -21,24 +21,25 @@ public class Vehicle {
 
     public Vehicle(){}
     public Vehicle(String plate, String brand, String model, Integer year, Client client) {
-        this.plate = plate;
+        setPlate(plate);
         this.brand = brand;
         this.model = model;
-        this.year = year;
-        this.client = client;
+        setYear(year);
+        setClient(client);
     }
 
     public String getPlate(){
         return plate;
     }
     public void setPlate(String plate) {
+        if (plate == null || plate.isBlank()){
+            throw new DomainException("Placa inválida.");
+        }
         this.plate = plate;
     }
-
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -64,6 +65,9 @@ public class Vehicle {
     }
 
     public void setYear(Integer year) {
+        if(year == null || year <= 0){
+            throw new DomainException("Ano do véiculo inválido.");
+        }
         this.year = year;
     }
 
@@ -72,6 +76,9 @@ public class Vehicle {
     }
 
     public void setClient(Client client) {
+        if(client == null){
+            throw new DomainException("Cliente inválido.");
+        }
         this.client = client;
     }
 

@@ -15,8 +15,8 @@ public class Client {
 
     public Client(){}
     public Client(String name, String cpf, String phone, String address){
-        this.name = name;
-        this.cpf = cpf;
+        setName(name);
+        setCpf(cpf);
         this.phone = phone;
         this.address = address;
     }
@@ -25,6 +25,9 @@ public class Client {
         return cpf;
     }
     public void setCpf(String cpf) {
+        if(cpf == null || cpf.isBlank()){
+            throw new DomainException("CPF inválido.");
+        }
         this.cpf = cpf;
     }
 
@@ -41,6 +44,9 @@ public class Client {
     }
 
     public void setName(String name) {
+        if(name == null || name.isBlank()){
+            throw new DomainException("Nome inválido.");
+        }
         this.name = name;
     }
 

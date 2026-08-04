@@ -1,5 +1,7 @@
 package model.entities;
 
+import model.exception.DomainException;
+
 import java.math.BigDecimal;
 
 public class ServiceItem {
@@ -13,9 +15,9 @@ public class ServiceItem {
     public ServiceItem(){}
 
     public ServiceItem(String description, Integer quantity, BigDecimal unitValue, ServiceOrder serviceOrder){
-        this.description = description;
-        this.quantity = quantity;
-        this.unitValue = unitValue;
+        setDescription(description);
+        setQuantity(quantity);
+        setUnitValue(unitValue);
         this.serviceOrder = serviceOrder;
     }
 
@@ -32,6 +34,9 @@ public class ServiceItem {
     }
 
     public void setDescription(String description) {
+        if(description == null || description.isBlank()){
+            throw new DomainException("Descrição do item inválida.");
+        }
         this.description = description;
     }
 
@@ -40,6 +45,9 @@ public class ServiceItem {
     }
 
     public void setQuantity(Integer quantity) {
+        if (quantity == null || quantity <= 0){
+            throw new DomainException("A quantidade deve ser maior que zero.");
+        }
         this.quantity = quantity;
     }
 
@@ -48,6 +56,9 @@ public class ServiceItem {
     }
 
     public void setUnitValue(BigDecimal unitValue) {
+        if(unitValue == null || unitValue.compareTo(BigDecimal.ZERO) <= 0){
+            throw new DomainException("O valor unitário deve ser maior que zero.");
+        }
         this.unitValue = unitValue;
     }
 

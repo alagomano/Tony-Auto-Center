@@ -7,6 +7,7 @@ import model.exception.ServiceException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ServiceOrder {
@@ -29,9 +30,9 @@ public class ServiceOrder {
     }
 
     public ServiceOrder(String problemDescription, String observations, Vehicle vehicle){
-        this.problemDescription = problemDescription;
-        this.observations = observations;
-        this.vehicle = vehicle;
+        setProblemDescription(problemDescription);
+        setObservations(observations);
+        setVehicle(vehicle);
         this.entryDate = LocalDateTime.now();
         this.status = OrderStatus.OPEN;
         this.totalValue = BigDecimal.ZERO;
@@ -67,6 +68,9 @@ public class ServiceOrder {
     }
 
     public void setProblemDescription(String problemDescription) {
+        if(problemDescription == null || problemDescription.isBlank()){
+            throw new DomainException("Descrição do problema inválida.");
+        }
         this.problemDescription = problemDescription;
     }
 
@@ -75,6 +79,9 @@ public class ServiceOrder {
     }
 
     public void setObservations(String observations) {
+        if(observations == null || observations.isBlank()){
+            observations = "Sem observações.";
+        }
         this.observations = observations;
     }
 
@@ -92,7 +99,7 @@ public class ServiceOrder {
     }
 
     public List<ServiceItem> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     public Vehicle getVehicle() {
@@ -100,20 +107,27 @@ public class ServiceOrder {
     }
 
     public void setVehicle(Vehicle vehicle) {
+        if(vehicle == null){
+            throw new DomainException("Veículo inválido.");
+        }
         this.vehicle = vehicle;
     }
 
-    public void addItem(ServiceItem item){
-
+    private void validateItem(ServiceItem item){
         if(item == null){
-            throw new DomainException("Item de serviço inválido");
+            throw new DomainException("Item inválido.");
         }
+    }
+
+    public void addItem(ServiceItem item){
+        validateItem(item);
         item.setServiceOrder(this);
         items.add(item);
         totalValue = calculateTotal();
     }
 
     public void deleteItem(ServiceItem item){
+        validateItem(item);
         items.remove(item);
         totalValue = calculateTotal();
     }
