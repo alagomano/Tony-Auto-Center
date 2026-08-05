@@ -1,16 +1,24 @@
 package model.entities;
 
+import jakarta.persistence.*;
 import model.exception.DomainException;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Client {
+@Entity
+@Table(name = "clients")
+public class Client implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Column(unique = true, nullable = false)
     private String cpf;
     private String phone;
     private String address;
+    @Transient
     private Map<String, Vehicle> vehicles = new HashMap<>();
 
     public Client(){}
