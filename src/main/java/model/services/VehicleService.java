@@ -46,6 +46,11 @@ public class VehicleService {
         }
     }
 
+    private void loadServiceOrders(Vehicle vehicle){
+        vehicle.loadServiceOrders(
+                serviceOrderDao.findByVehicle(vehicle.getId()));
+    }
+
     public ServiceOrder openServiceOrder(Long vehicleId, String descriptionProblem, String observations){
         validateID(vehicleId);
         Vehicle vehicle = findVehicleById(vehicleId);
@@ -87,6 +92,7 @@ public class VehicleService {
         validateID(vehicleId);
         Vehicle vehicle = vehicleDao.findById(vehicleId);
         validateVehicleExists(vehicle);
+        loadServiceOrders(vehicle);
 
         return vehicle;
     }
@@ -94,6 +100,7 @@ public class VehicleService {
         validatePlate(plate);
         Vehicle vehicle = vehicleDao.findByPlate(plate);
         validateVehicleExists(vehicle);
+        loadServiceOrders(vehicle);
 
         return vehicle;
     }

@@ -83,7 +83,7 @@ public class Vehicle {
     }
 
     public List<ServiceOrder> getServiceOrders() {
-        return serviceOrders;
+        return Collections.unmodifiableList(serviceOrders);
     }
 
     public void addServiceOrder(ServiceOrder order){
@@ -105,8 +105,11 @@ public class Vehicle {
     public boolean hasActiveServiceOrder() {
         return serviceOrders.stream().anyMatch(order -> order.getStatus() == OrderStatus.OPEN || order.getStatus() == OrderStatus.IN_PROGRESS);
     }
-    public List<ServiceOrder> getHistory(){
-        return Collections.unmodifiableList(serviceOrders);
+    public void loadServiceOrders(List<ServiceOrder> orders){
+        serviceOrders.clear();
+        if (orders != null){
+            serviceOrders.addAll(orders);
+        }
     }
 
     @Override
