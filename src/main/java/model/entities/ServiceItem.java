@@ -3,6 +3,7 @@ package model.entities;
 import model.exception.DomainException;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class ServiceItem {
     private Long id;
@@ -76,6 +77,18 @@ public class ServiceItem {
         );
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ServiceItem that)) return false;
+        if(id == null || that.id == null) return false;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 
     @Override
     public String toString(){

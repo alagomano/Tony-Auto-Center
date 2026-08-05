@@ -105,6 +105,19 @@ public class Client {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Client client)) return false;
+        if (id == null || client.id == null) return false;
+        return Objects.equals(getId(), client.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    @Override
     public String toString(){
         return "ID: "+ id + " | Nome: " + name + " | CPF: " + cpf + " | Telefone " + phone + " | Endereço: " + address;
     }

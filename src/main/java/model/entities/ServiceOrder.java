@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ServiceOrder {
     private Long id;
@@ -166,6 +167,19 @@ public class ServiceOrder {
         this.status = OrderStatus.FINISHED;
         this.exitDate = LocalDateTime.now();
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ServiceOrder that)) return false;
+        if(id == null || that.id ==null) return false;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 
     @Override

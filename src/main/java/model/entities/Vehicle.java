@@ -6,6 +6,7 @@ import model.exception.DomainException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Vehicle {
     private Long id;
@@ -110,6 +111,19 @@ public class Vehicle {
         if (orders != null){
             serviceOrders.addAll(orders);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Vehicle vehicle)) return false;
+        if (id == null || vehicle.id == null) return false;
+        return Objects.equals(getId(), vehicle.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 
     @Override
