@@ -97,8 +97,8 @@ public class ServiceOrderService {
         validateID(serviceItemId);
         ServiceOrder order = findServiceOrderById(serviceOrderId);
         ServiceItem item = findServiceItemById(serviceOrderId, serviceItemId);
-        serviceItemDao.deleteById(serviceItemId);
         order.deleteItem(item);
+        serviceItemDao.deleteById(serviceItemId);
     }
 
     public void startServiceOrder(Long serviceOrderId){
