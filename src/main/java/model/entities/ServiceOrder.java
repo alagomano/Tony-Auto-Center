@@ -31,7 +31,7 @@ public class ServiceOrder implements Serializable {
     @ManyToOne
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
-    @Transient
+    @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL)
     private List<ServiceItem> items = new ArrayList<>();
 
 
