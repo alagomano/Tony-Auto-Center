@@ -1,16 +1,25 @@
 package model.entities;
 
+import jakarta.persistence.*;
 import model.exception.DomainException;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class ServiceItem {
+@Entity
+@Table(name = "service_item")
+public class ServiceItem implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false, length = 100)
     private String description;
+    @Column(nullable = false)
     private Integer quantity;
+    @Column(nullable = false)
     private BigDecimal unitValue;
-
+    @Transient
     private ServiceOrder serviceOrder;
 
     public ServiceItem(){}
