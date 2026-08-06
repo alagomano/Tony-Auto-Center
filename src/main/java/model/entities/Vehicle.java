@@ -1,23 +1,34 @@
 package model.entities;
 
+import jakarta.persistence.*;
 import model.enums.OrderStatus;
 import model.exception.DomainException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class Vehicle {
+@Entity
+@Table(name = "vehicles")
+public class Vehicle implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String plate;
-    private String brand;
-    private String model;
-    private Integer year;
 
+    @Column(unique = true, nullable = false, length = 10)
+    private String plate;
+    @Column(length = 50)
+    private String brand;
+    @Column(length = 50)
+    private String model;
+    @Column(nullable = false)
+    private Integer year;
+    @Transient
     private Client client;
 
-
+    @Transient
     private List<ServiceOrder> serviceOrders = new ArrayList<>();
 
     public Vehicle(){}
