@@ -1,8 +1,11 @@
 package model.dao.impl;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceException;
 import model.dao.ServiceItemDao;
 import model.entities.ServiceItem;
+import model.exception.DbException;
 
 import java.util.List;
 
@@ -12,32 +15,87 @@ public class ServiceItemDaoJPA implements ServiceItemDao {
         this.entityManager = entityManager;
     }
     @Override
-    public void insert(ServiceItem entity) {
-
+    public void insert(ServiceItem serviceItem) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.persist(serviceItem);
+            transaction.commit();
+        }catch (PersistenceException e){
+            if(transaction.isActive()){
+                transaction.rollback();
+            }
+            throw new DbException("Erro ao inserir item.", e);
+        }
     }
 
     @Override
-    public void update(ServiceItem entity) {
-
+    public void update(ServiceItem serviceItem) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.merge(serviceItem);
+            transaction.commit();
+        }catch (PersistenceException e){
+            if(transaction.isActive()){
+                transaction.rollback();
+            }
+            throw new DbException("Erro ao atualizar informações do item.", e);
+        }
     }
 
     @Override
-    public void deleteById(Long aLong) {
+    public void deleteById(Long id) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            ServiceItem serviceItem = entityManager.find(ServiceItem.class, id);
+            if (serviceItem == null) {
+                throw new DbException("Item não encontrado.");
+            }
 
+            transaction.begin();
+            entityManager.remove(serviceItem);
+            transaction.commit();
+        }catch (PersistenceException e){
+            if(transaction.isActive()){
+                transaction.rollback();
+            }
+            throw new DbException("Erro ao deletar item.", e);
+        }
     }
 
     @Override
-    public ServiceItem findById(Long aLong) {
-        return null;
+    public ServiceItem findById(Long id) {
+        try {
+            return entityManager.find(ServiceItem.class, id);
+        }catch (PersistenceException e){
+            throw new DbException("Erro ao buscar item.", e);
+        }
     }
 
     @Override
     public List<ServiceItem> findAll() {
-        return null;
+        try {
+            String jpql = """
+                    SELECT si FROM ServiceItem si
+                    """;
+            return entityManager.createQuery(jpql, ServiceItem.class).getResultList();
+        }catch (PersistenceException e){
+            throw new DbException("Erro ao listar itens.", e);
+        }
     }
 
     @Override
     public List<ServiceItem> findByServiceOrder(Long serviceOrderId) {
-        return null;
+        try {
+            String jpql = """
+                    SELECT si FROM ServiceItem si
+                    WHERE si.serviceOrder.id = :id
+                    """;
+            return entityManager.createQuery(jpql, ServiceItem.class).setParameter("id", serviceOrderId).getResultList();
+
+        }catch (PersistenceException e){
+            throw new DbException("Erro ao buscar itens da ordem de serviço.", e);
+        }
     }
 }
