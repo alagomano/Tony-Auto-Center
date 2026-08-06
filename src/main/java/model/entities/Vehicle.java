@@ -29,7 +29,7 @@ public class Vehicle implements Serializable {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    @Transient
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
     private List<ServiceOrder> serviceOrders = new ArrayList<>();
 
     public Vehicle(){}

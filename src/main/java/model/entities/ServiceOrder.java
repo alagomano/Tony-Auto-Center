@@ -28,7 +28,8 @@ public class ServiceOrder implements Serializable {
     private OrderStatus status;
     private BigDecimal totalValue;
 
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
     @Transient
     private List<ServiceItem> items = new ArrayList<>();
