@@ -13,10 +13,13 @@ public class Client implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false, length = 100)
     private String name;
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 14)
     private String cpf;
+    @Column(length = 20)
     private String phone;
+    @Column(length = 150)
     private String address;
     @Transient
     private Map<String, Vehicle> vehicles = new HashMap<>();
