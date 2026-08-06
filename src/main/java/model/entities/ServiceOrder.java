@@ -1,9 +1,10 @@
 package model.entities;
 
+import jakarta.persistence.*;
 import model.enums.OrderStatus;
 import model.exception.DomainException;
-import model.exception.ServiceException;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,18 +12,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class ServiceOrder {
+@Entity
+@Table(name = "service_orders")
+public class ServiceOrder implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private LocalDateTime entryDate;
     private LocalDateTime exitDate;
+    @Column(nullable = false)
     private String problemDescription;
     private String observations;
+    @Column(nullable = false, length = 30)
     private OrderStatus status;
     private BigDecimal totalValue;
 
+    @Transient
     private Vehicle vehicle;
-
-
+    @Transient
     private List<ServiceItem> items = new ArrayList<>();
 
 
