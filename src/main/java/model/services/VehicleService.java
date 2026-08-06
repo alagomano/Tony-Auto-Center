@@ -72,7 +72,6 @@ public class VehicleService {
         Client client = clientService.findClientById(clientId);
         vehicle.setClient(client);
         validateVehicle(vehicle);
-        client.addVehicle(vehicle);
         vehicleDao.insert(vehicle);
     }
 

@@ -57,15 +57,6 @@ public class ClientService {
         }
     }
 
-    public void addVehicleToClient(Long clientId, Vehicle vehicle){
-        validateID(clientId);
-        validateVehicleExists(vehicle);
-        Client client = findClientById(clientId);
-
-        client.addVehicle(vehicle);
-        vehicleDao.insert(vehicle);
-    }
-
     public void registerClient(Client client){
         validateClient(client);
         clientDao.insert(client);
@@ -92,10 +83,6 @@ public class ClientService {
         validateID(clientId);
         Client client = clientDao.findById(clientId);
         validateClientExists(client);
-
-        List<Vehicle> vehicles = vehicleDao.findByClient(clientId);
-        vehicles.forEach(client::addVehicle);
-
         return client;
     }
 
