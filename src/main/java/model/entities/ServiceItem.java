@@ -17,7 +17,7 @@ public class ServiceItem implements Serializable {
     private String description;
     @Column(nullable = false)
     private Integer quantity;
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal unitValue;
     @ManyToOne
     @JoinColumn(name = "service_order_id", nullable = false)

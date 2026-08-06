@@ -24,8 +24,10 @@ public class ServiceOrder implements Serializable {
     @Column(nullable = false)
     private String problemDescription;
     private String observations;
-    @Column(nullable = false, length = 30)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private OrderStatus status;
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalValue;
 
     @ManyToOne
