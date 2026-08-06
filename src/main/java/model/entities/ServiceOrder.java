@@ -30,10 +30,10 @@ public class ServiceOrder implements Serializable {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalValue;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
-    @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<ServiceItem> items = new ArrayList<>();
 
 

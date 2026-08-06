@@ -25,11 +25,11 @@ public class Vehicle implements Serializable {
     private String model;
     @Column(nullable = false)
     private Integer year;
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ServiceOrder> serviceOrders = new ArrayList<>();
 
     public Vehicle(){}
