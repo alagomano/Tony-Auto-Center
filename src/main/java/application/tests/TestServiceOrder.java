@@ -73,7 +73,7 @@ public class TestServiceOrder {
 
         Vehicle vehicle = vehicleService.findVehicleByPlate(plate);
 
-        order = serviceOrderService.createServiceOrder(vehicle, order);
+        order = vehicleService.openServiceOrder(vehicle.getId(), order.getProblemDescription(), order.getObservations());
         System.out.println("Ordem se serviço cadastrada com Sucesso.");
         System.out.println(order);
     }
