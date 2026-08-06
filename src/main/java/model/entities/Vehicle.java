@@ -25,7 +25,8 @@ public class Vehicle implements Serializable {
     private String model;
     @Column(nullable = false)
     private Integer year;
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
     @Transient

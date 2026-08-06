@@ -21,7 +21,8 @@ public class Client implements Serializable {
     private String phone;
     @Column(length = 150)
     private String address;
-    @Transient
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @MapKey(name = "plate")
     private Map<String, Vehicle> vehicles = new HashMap<>();
 
     public Client(){}
