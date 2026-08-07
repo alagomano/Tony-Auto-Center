@@ -95,6 +95,7 @@ public class Client implements Serializable {
         if(vehicles.containsKey(vehicle.getPlate())){
             throw new DomainException("Veículo já cadastrado");
         }
+        vehicle.setClient(this);
         vehicles.put(vehicle.getPlate(), vehicle);
     }
 
