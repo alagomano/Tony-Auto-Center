@@ -1,6 +1,7 @@
 package model.dao;
 
 
+import jakarta.persistence.EntityManager;
 import model.dao.impl.ClientDaoJPA;
 import model.dao.impl.ServiceItemDaoJPA;
 import model.dao.impl.ServiceOrderDaoJPA;
@@ -9,19 +10,21 @@ import model.infrastructure.JPAUtil;
 
 public class DaoFactory {
 
+    private static final EntityManager entityManager = JPAUtil.getEntityManager();
+
     public static ClientDao createClientDao(){
-        return new ClientDaoJPA(JPAUtil.getEntityManager());
+        return new ClientDaoJPA(entityManager);
     }
 
     public static VehicleDao createVehicleDao(){
-        return new VehicleDaoJPA(JPAUtil.getEntityManager());
+        return new VehicleDaoJPA(entityManager);
     }
 
     public static ServiceOrderDao createServiceOrderDao(){
-        return new ServiceOrderDaoJPA(JPAUtil.getEntityManager());
+        return new ServiceOrderDaoJPA(entityManager);
     }
 
     public static ServiceItemDao createServiceItemDao(){
-        return new ServiceItemDaoJPA(JPAUtil.getEntityManager());
+        return new ServiceItemDaoJPA(entityManager);
     }
 }

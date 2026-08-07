@@ -4,7 +4,6 @@ import application.Main;
 import model.entities.ServiceItem;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
-import model.exception.ServiceException;
 import model.services.ServiceOrderService;
 import model.services.VehicleService;
 

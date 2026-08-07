@@ -2,7 +2,6 @@ package model.services;
 
 import model.dao.ClientDao;
 import model.dao.DaoFactory;
-import model.dao.VehicleDao;
 import model.entities.Client;
 import model.entities.Vehicle;
 import model.exception.ServiceException;
@@ -13,7 +12,6 @@ import java.util.List;
 public class ClientService {
 
     private final ClientDao clientDao = DaoFactory.createClientDao();
-    private final VehicleDao vehicleDao = DaoFactory.createVehicleDao();
 
     private void validateClient(Client client){
         if(client == null){
@@ -45,18 +43,6 @@ public class ClientService {
         }
     }
 
-    private void validateVehicleExists(Vehicle vehicle){
-        if (vehicle == null){
-            throw new ServiceException("Veículo não encontrado.");
-        }
-    }
-
-    private void validatePlate(String plate){
-        if(plate == null || plate.isBlank()){
-            throw new ServiceException("Placa inválida.");
-        }
-    }
-
     public void registerClient(Client client){
         validateClient(client);
         clientDao.insert(client);
@@ -84,17 +70,6 @@ public class ClientService {
         Client client = clientDao.findById(clientId);
         validateClientExists(client);
         return client;
-    }
-
-    public void removeVehicle(Long clientId, String plate){
-        validatePlate(plate);
-        Client client = findClientById(clientId);
-        Vehicle vehicle = vehicleDao.findByPlate(plate);
-        validateVehicleExists(vehicle);
-
-        client.removeVehicle(vehicle.getPlate());
-        clientDao.update(client);
-
     }
 
     public Collection<Vehicle> getVehiclesByClient(Long clientId){

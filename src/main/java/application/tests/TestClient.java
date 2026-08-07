@@ -2,9 +2,7 @@ package application.tests;
 
 import application.Main;
 import model.entities.Client;
-import model.exception.DbException;
-import model.exception.DomainException;
-import model.exception.ServiceException;
+import model.entities.Vehicle;
 import model.services.ClientService;
 
 import java.util.Collection;
@@ -36,6 +34,15 @@ public class TestClient {
         System.out.println("Todos os clientes cadastrados: ");
         Collection<Client> clients = clientService.getClients();
         clients.forEach(System.out::println);
+    }
+
+    private static void findAllVehicles(String cpf){
+        Client client = clientService.findClientByCpf(cpf);
+        Collection<Vehicle> vehicles = clientService.getVehiclesByClient(client.getId());
+        if(vehicles.isEmpty()){
+            System.out.println("Lista vazia.");
+        }
+        vehicles.forEach(System.out::println);
     }
 
     private static void update(String cpf){
@@ -100,15 +107,16 @@ public class TestClient {
     public static void client(){
         String cpf;
         int option = 0;
-        while (option != 6) {
+        while (option != 7) {
             System.out.println("""
                     ==== Menu Cliente ====
                         1. Cadastrar
                         2. Buscar por CPF
-                        3. Listar todos
-                        4. Atualizar
-                        5. Excluir
-                        6. Voltar
+                        3. Listar todos clientes
+                        4. Listar veículos por cliente
+                        5. Atualizar
+                        6. Excluir
+                        7. Voltar
                     ========================
                     """);
             System.out.print("Escolha uma opção: ");
@@ -138,7 +146,7 @@ public class TestClient {
                 case 4:
                     System.out.print("Digite o CPF: ");
                     cpf = scanner.nextLine();
-                    update(cpf);
+                    findAllVehicles(cpf);
                     System.out.println("Precione enter para continuar.");
                     scanner.nextLine();
                     System.out.println();
@@ -146,12 +154,20 @@ public class TestClient {
                 case 5:
                     System.out.print("Digite o CPF: ");
                     cpf = scanner.nextLine();
-                    remove(cpf);
+                    update(cpf);
                     System.out.println("Precione enter para continuar.");
                     scanner.nextLine();
                     System.out.println();
                     break;
                 case 6:
+                    System.out.print("Digite o CPF: ");
+                    cpf = scanner.nextLine();
+                    remove(cpf);
+                    System.out.println("Precione enter para continuar.");
+                    scanner.nextLine();
+                    System.out.println();
+                    break;
+                case 7:
                     System.out.println("Voltando para o Menu Principal...");
                     break;
                 default:
