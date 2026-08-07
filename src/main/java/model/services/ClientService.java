@@ -93,7 +93,7 @@ public class ClientService {
         validateVehicleExists(vehicle);
 
         client.removeVehicle(vehicle.getPlate());
-        vehicleDao.deleteById(vehicle.getId());
+        clientDao.update(client);
 
     }
 
