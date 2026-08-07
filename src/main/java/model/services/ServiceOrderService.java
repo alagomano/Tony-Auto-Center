@@ -8,6 +8,7 @@ import model.entities.ServiceOrder;
 import model.entities.Vehicle;
 import model.exception.ServiceException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class ServiceOrderService {
@@ -83,11 +84,14 @@ public class ServiceOrderService {
         validateID(serviceOrderId);
         validateServiceItem(serviceItem);
 
-        findServiceOrderById(serviceOrderId);
+        ServiceOrder order = findServiceOrderById(serviceOrderId);
         findServiceItemById(serviceOrderId, serviceItem.getId());
 
         serviceItemDao.update(serviceItem);
-
+        order.setTotalValue(order.getItems().stream()
+                .map(ServiceItem::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        serviceOrderDao.update(order);
     }
 
     public void deleteServiceItemById(Long serviceOrderId, Long serviceItemId){
@@ -95,7 +99,7 @@ public class ServiceOrderService {
         ServiceOrder order = findServiceOrderById(serviceOrderId);
         ServiceItem item = findServiceItemById(serviceOrderId, serviceItemId);
         order.deleteItem(item);
-        serviceItemDao.deleteById(serviceItemId);
+        serviceOrderDao.update(order);
     }
 
     public void startServiceOrder(Long serviceOrderId){
