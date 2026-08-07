@@ -47,9 +47,6 @@ public class ServiceOrderService {
         validateID(serviceOrderId);
         ServiceOrder serviceOrder = serviceOrderDao.findById(serviceOrderId);
         validateServiceOrder(serviceOrder);
-
-        List<ServiceItem> items = serviceItemDao.findByServiceOrder(serviceOrderId);
-        items.forEach(serviceOrder::addItem);
         return serviceOrder;
     }
 
