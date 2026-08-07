@@ -5,7 +5,6 @@ import model.dao.ServiceItemDao;
 import model.dao.ServiceOrderDao;
 import model.entities.ServiceItem;
 import model.entities.ServiceOrder;
-import model.entities.Vehicle;
 import model.exception.ServiceException;
 
 import java.math.BigDecimal;
@@ -35,13 +34,9 @@ public class ServiceOrderService {
     public void addItemToOrder(Long serviceOrderId, ServiceItem item){
         validateID(serviceOrderId);
         validateServiceItem(item);
-
         ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
-
         serviceOrder.addItem(item);
-        serviceItemDao.insert(item);
         serviceOrderDao.update(serviceOrder);
-
     }
 
     public ServiceOrder findServiceOrderById(Long serviceOrderId){
