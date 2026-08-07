@@ -118,12 +118,6 @@ public class Vehicle implements Serializable {
     public boolean hasActiveServiceOrder() {
         return serviceOrders.stream().anyMatch(order -> order.getStatus() == OrderStatus.OPEN || order.getStatus() == OrderStatus.IN_PROGRESS);
     }
-    public void loadServiceOrders(List<ServiceOrder> orders){
-        serviceOrders.clear();
-        if (orders != null){
-            serviceOrders.addAll(orders);
-        }
-    }
 
     @Override
     public boolean equals(Object o) {
