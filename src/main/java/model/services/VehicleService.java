@@ -1,22 +1,25 @@
 package model.services;
 
-import model.dao.DaoFactory;
 import model.dao.ServiceOrderDao;
 import model.dao.VehicleDao;
 import model.entities.Client;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
 import model.exception.ServiceException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class VehicleService {
 
-    private final ClientService clientService = new ClientService();
-    private final VehicleDao vehicleDao = DaoFactory.createVehicleDao();
-    private final ServiceOrderDao serviceOrderDao = DaoFactory.createServiceOrderDao();
+    private final ClientService clientService;
+    private final VehicleDao vehicleDao;
+    private final ServiceOrderDao serviceOrderDao;
 
-    public VehicleService(){
+    public VehicleService(ClientService clientService, VehicleDao vehicleDao, ServiceOrderDao serviceOrderDao){
+        this.clientService = clientService;
+        this.vehicleDao = vehicleDao;
+        this.serviceOrderDao = serviceOrderDao;
     }
 
     private void validateVehicleExists(Vehicle vehicle){

@@ -1,18 +1,23 @@
 package model.services;
 
-import model.dao.DaoFactory;
 import model.dao.ServiceItemDao;
 import model.dao.ServiceOrderDao;
 import model.entities.ServiceItem;
 import model.entities.ServiceOrder;
 import model.exception.ServiceException;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-
+@Service
 public class ServiceOrderService {
-    private final ServiceOrderDao serviceOrderDao = DaoFactory.createServiceOrderDao();
-    private final ServiceItemDao serviceItemDao = DaoFactory.createServiceItemDao();
+    private final ServiceOrderDao serviceOrderDao;
+    private final ServiceItemDao serviceItemDao;
+
+    public ServiceOrderService(ServiceOrderDao serviceOrderDao, ServiceItemDao serviceItemDao) {
+        this.serviceOrderDao = serviceOrderDao;
+        this.serviceItemDao = serviceItemDao;
+    }
 
     private void validateServiceOrder(ServiceOrder serviceOrder){
         if (serviceOrder == null) {

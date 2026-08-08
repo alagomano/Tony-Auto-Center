@@ -1,17 +1,24 @@
 package model.services;
 
 import model.dao.ClientDao;
-import model.dao.DaoFactory;
 import model.entities.Client;
 import model.entities.Vehicle;
 import model.exception.ServiceException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
 
+@Service
 public class ClientService {
 
-    private final ClientDao clientDao = DaoFactory.createClientDao();
+    private final ClientDao clientDao;
+    @Autowired
+    public ClientService(ClientDao clientDao) {
+        this.clientDao = clientDao;
+    }
 
     private void validateClient(Client client){
         if(client == null){
@@ -42,7 +49,7 @@ public class ClientService {
             throw new ServiceException("ID inválido.");
         }
     }
-
+    @Transactional
     public void registerClient(Client client){
         validateClient(client);
         clientDao.insert(client);
