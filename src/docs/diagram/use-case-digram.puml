@@ -1,59 +1,112 @@
+```plantuml
 @startuml
 
 left to right direction
-skinparam actorStyle awesome
 
-actor "Proprietário" as P
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+skinparam usecase {
+    BackgroundColor White
+    BorderColor #2E75B6
+}
+
+title Tony Auto Center — Diagrama de Casos de Uso (Java 25 + JPA/Hibernate)
+
+actor "Proprietário / Usuário da Oficina" as User
 
 rectangle "Tony Auto Center" {
 
-  package "Gestão de Clientes" {
-    usecase "Cadastrar Cliente" as UC01
-    usecase "Editar Cliente" as UC02
-    usecase "Listar Clientes" as UC03
-  }
+    package "Gestão de Clientes" {
 
-  package "Gestão de Veículos" {
-    usecase "Cadastrar Veículo" as UC04
-    usecase "Editar Veículo" as UC05
-    usecase "Buscar Veículo por Placa" as UC06
-  }
+        usecase "Cadastrar Cliente" as UC01
+        usecase "Consultar Cliente" as UC02
+        usecase "Listar Clientes" as UC03
+        usecase "Remover Cliente" as UC04
+    }
 
-  package "Ordem de Serviço" {
-    usecase "Abrir Ordem de Serviço" as UC07
-    usecase "Atualizar Status da OS" as UC08
-    usecase "Adicionar Serviço" as UC09
-    usecase "Fechar Ordem de Serviço" as UC10
-    usecase "Calcular Valor Total" as UC11
-  }
+    package "Gestão de Veículos" {
 
-  package "Histórico" {
-    usecase "Consultar Histórico do Veículo" as UC12
-    usecase "Listar OS por Status" as UC13
-  }
+        usecase "Cadastrar Veículo" as UC05
+        usecase "Consultar Veículo\npor Placa" as UC06
+        usecase "Listar Veículos\ndo Cliente" as UC07
+        usecase "Remover Veículo" as UC08
+    }
 
+    package "Ordens de Serviço" {
+
+        usecase "Abrir Ordem\nde Serviço" as UC09
+        usecase "Consultar Ordem\nde Serviço" as UC10
+        usecase "Listar Ordens\ndo Veículo" as UC11
+        usecase "Atualizar Status\nda Ordem" as UC12
+        usecase "Finalizar Ordem\nde Serviço" as UC13
+        usecase "Remover Ordem\nde Serviço" as UC14
+    }
+
+    package "Itens da Ordem" {
+
+        usecase "Adicionar Item\nde Serviço" as UC15
+        usecase "Atualizar Item\nde Serviço" as UC16
+        usecase "Remover Item\nde Serviço" as UC17
+    }
+
+    package "Histórico" {
+
+        usecase "Consultar Histórico\ndo Veículo" as UC18
+    }
 }
 
-P --> UC01
-P --> UC02
-P --> UC03
+' =========================================================
+' CLIENTES
+' =========================================================
 
-P --> UC04
-P --> UC05
-P --> UC06
+User --> UC01
+User --> UC02
+User --> UC03
+User --> UC04
 
-P --> UC07
-P --> UC08
-P --> UC09
-P --> UC10
+' =========================================================
+' VEÍCULOS
+' =========================================================
 
-P --> UC12
-P --> UC13
+User --> UC05
+User --> UC06
+User --> UC07
+User --> UC08
 
+' =========================================================
+' ORDENS DE SERVIÇO
+' =========================================================
 
-UC09 .> UC11 : <<include>>
-UC10 .> UC11 : <<include>>
-UC10 .> UC08 : <<include>>
-UC12 .> UC06 : <<include>>
+User --> UC09
+User --> UC10
+User --> UC11
+User --> UC12
+User --> UC13
+User --> UC14
+
+' =========================================================
+' ITENS DA ORDEM
+' =========================================================
+
+User --> UC15
+User --> UC16
+User --> UC17
+
+' =========================================================
+' HISTÓRICO
+' =========================================================
+
+User --> UC18
+
+' =========================================================
+' RELACIONAMENTOS
+' =========================================================
+
+UC18 .> UC11 : <<include>>
+
+UC13 .> UC12 : <<include>>
 
 @enduml
+```

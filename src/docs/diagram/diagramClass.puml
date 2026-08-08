@@ -1,189 +1,354 @@
+```plantuml
 @startuml diagramClass
 
 skinparam classAttributeIconSize 0
 skinparam classFontStyle bold
 skinparam packageStyle rectangle
 skinparam shadowing false
+
 skinparam class {
     BackgroundColor White
     BorderColor #2E75B6
     ArrowColor #2E75B6
 }
+
 skinparam note {
     BackgroundColor #FFF3CD
     BorderColor #C9A227
 }
 
-title Tony Auto Center — Diagrama de Classes (Etapa 2 — Java Puro)
+title Tony Auto Center — Diagrama de Classes (Java 25 + JPA/Hibernate)
+
+' =========================================================
+' ENUMS
+' =========================================================
 
 package "model.enums" {
-  enum OrderStatus {
-    OPEN
-    IN_PROGRESS
-    WAITING_PARTS
-    FINISHED
-    DELIVERED
-  }
+
+    enum OrderStatus {
+        OPEN
+        IN_PROGRESS
+        FINISHED
+        DELIVERED
+    }
 }
 
+' =========================================================
+' EXCEPTIONS
+' =========================================================
+
 package "model.exception" {
-  class ServiceException {
-    + ServiceException(msg: String)
-  }
+
+    class ServiceException {
+        + ServiceException(msg: String)
+    }
+
+    class DomainException {
+        + DomainException(msg: String)
+    }
+
+    class DbException {
+        + DbException(msg: String)
+    }
+
+    DomainException --|> ServiceException
 }
+
+' =========================================================
+' ENTITIES
+' =========================================================
 
 package "model.entities" {
 
-  class Client {
-    - id: Long
-    - name: String
-    - cpf: String
-    - phone: String
-    - address: String
-    - vehicles: Map<String, Vehicle>
-    --
-    + Client(name, cpf, phone, address)
-    + getCpf(): String
-    + addVehicle(vehicle: Vehicle): void
-    + getVehicle(plate: String): Vehicle
-    + getVehicles(): Collection<Vehicle>
-    + removeVehicle(plate: String): void
-    + toString(): String
-    __PENDENTE__
-    + getId(): Long
-    + getName(): String
-    + getPhone(): String
-    + getAddress(): String
-    « campo email decidido mas ainda
-      não incluído na classe »
-  }
+    class Client {
+        - id: Long
+        - name: String
+        - cpf: String
+        - phone: String
+        - address: String
+        - vehicles: Map
+        --
+        + Client()
+        + Client(name, cpf, phone, address)
+        + getId(): Long
+        + getName(): String
+        + getCpf(): String
+        + getPhone(): String
+        + getAddress(): String
+        + getVehicles(): Collection
+        + addVehicle(vehicle: Vehicle): void
+        + removeVehicle(vehicle: Vehicle): void
+        + toString(): String
+    }
 
-  class Vehicle {
-    - id: Long
-    - plate: String
-    - brand: String
-    - model: String
-    - year: Integer
-    - mileage: Integer
-    - serviceOrders: List<ServiceOrder>
-    --
-    + Vehicle(plate, brand, model, year, mileage)
-    + getPlate(): String
-    + openServiceOrder(problemDescription, observation): ServiceOrder
-    + getHistory(): List<ServiceOrder>
-    - addServiceOrder(order: ServiceOrder): void
-    __PENDENTE__
-    + getId(): Long
-    + getBrand(): String
-    + getModel(): String
-    + getYear(): Integer
-    + getMileage(): Integer
-    - client: Client  <color:#C9A227>« back-reference »</color>
-  }
+    class Vehicle {
+        - id: Long
+        - plate: String
+        - brand: String
+        - model: String
+        - year: Integer
+        - mileage: Integer
+        - client: Client
+        - serviceOrders: List
+        --
+        + Vehicle()
+        + Vehicle(plate, brand, model, year, mileage)
+        + getId(): Long
+        + getPlate(): String
+        + getBrand(): String
+        + getModel(): String
+        + getYear(): Integer
+        + getMileage(): Integer
+        + getClient(): Client
+        + setClient(client: Client): void
+        + getServiceOrders(): List
+        + toString(): String
+    }
 
-  class ServiceOrder {
-    - id: Long
-    - entryDate: LocalDateTime
-    - exitDate: LocalDateTime
-    - problemDescription: String
-    - observations: String
-    - status: OrderStatus
-    - totalValue: BigDecimal
-    - items: List<ServiceItem>
-    --
-    + ServiceOrder()
-    + ServiceOrder(problemDescription, observations)
-    + getProblemDescription(): String
-    + setProblemDescription(String): void
-    + getEntryDate(): LocalDateTime
-    + setEntryDate(LocalDateTime): void
-    + getStatus(): OrderStatus
-    + addService(item: ServiceItem): void
-    + calculateTotal(): BigDecimal
-    + update(status: OrderStatus): void
-    + close(): void
-    + toString(): String
-    __PENDENTE__
-    + getTotalValue(): BigDecimal
-    + getExitDate(): LocalDateTime
-    + getObservations(): String
-    + getItems(): List<ServiceItem>
-    - vehicle: Vehicle  <color:#C9A227>« back-reference »</color>
-  }
+    class ServiceOrder {
+        - id: Long
+        - entryDate: LocalDateTime
+        - exitDate: LocalDateTime
+        - problemDescription: String
+        - observations: String
+        - status: OrderStatus
+        - totalValue: BigDecimal
+        - vehicle: Vehicle
+        - items: List
+        --
+        + ServiceOrder()
+        + ServiceOrder(problemDescription, observations)
+        + getId(): Long
+        + getEntryDate(): LocalDateTime
+        + getExitDate(): LocalDateTime
+        + getProblemDescription(): String
+        + setProblemDescription(String): void
+        + getObservations(): String
+        + getStatus(): OrderStatus
+        + getTotalValue(): BigDecimal
+        + getVehicle(): Vehicle
+        + setVehicle(vehicle: Vehicle): void
+        + getItems(): List
+        + addService(item: ServiceItem): void
+        + calculateTotal(): BigDecimal
+        + update(status: OrderStatus): void
+        + close(): void
+        + toString(): String
+    }
 
-  class ServiceItem {
-    - id: Long
-    - description: String
-    - quantity: Integer
-    - unitValue: BigDecimal
-    --
-    + ServiceItem(description, quantity, unitValue)
-    + getSubtotal(): BigDecimal
-    + toString(): String
-    __PENDENTE__
-    + getId(): Long
-    + getDescription(): String
-    + getQuantity(): Integer
-    + getUnitValue(): BigDecimal
-    « validar quantity > 0 e unitValue >= 0 »
-  }
+    class ServiceItem {
+        - id: Long
+        - description: String
+        - quantity: Integer
+        - unitValue: BigDecimal
+        - serviceOrder: ServiceOrder
+        --
+        + ServiceItem()
+        + ServiceItem(description, quantity, unitValue)
+        + getId(): Long
+        + getDescription(): String
+        + getQuantity(): Integer
+        + getUnitValue(): BigDecimal
+        + getServiceOrder(): ServiceOrder
+        + setServiceOrder(order: ServiceOrder): void
+        + getSubtotal(): BigDecimal
+        + toString(): String
+    }
 }
+
+' =========================================================
+' DAO CONTRACTS
+' =========================================================
+
+package "model.dao" {
+
+    interface ClientDao {
+        + insert(client: Client): void
+        + update(client: Client): void
+        + deleteById(id: Long): void
+        + findById(id: Long): Client
+        + findByCpf(cpf: String): Client
+        + findAll(): List
+    }
+
+    interface VehicleDao {
+        + insert(vehicle: Vehicle): void
+        + update(vehicle: Vehicle): void
+        + deleteById(id: Long): void
+        + findById(id: Long): Vehicle
+        + findByPlate(plate: String): Vehicle
+        + findByClient(clientId: Long): List
+        + findAll(): List
+    }
+
+    interface ServiceOrderDao {
+        + insert(order: ServiceOrder): void
+        + update(order: ServiceOrder): void
+        + deleteById(id: Long): void
+        + findById(id: Long): ServiceOrder
+        + findByVehicle(vehicleId: Long): List
+        + findByStatus(status: OrderStatus): List
+    }
+
+    interface ServiceItemDao {
+        + insert(item: ServiceItem): void
+        + update(item: ServiceItem): void
+        + deleteById(id: Long): void
+        + findById(id: Long): ServiceItem
+        + findByServiceOrder(orderId: Long): List
+    }
+
+    class DaoFactory
+}
+
+' =========================================================
+' JPA DAO IMPLEMENTATIONS
+' =========================================================
+
+package "model.dao.impl" {
+
+    class ClientDaoJPA
+    class VehicleDaoJPA
+    class ServiceOrderDaoJPA
+    class ServiceItemDaoJPA
+
+    ClientDaoJPA ..|> ClientDao
+    VehicleDaoJPA ..|> VehicleDao
+    ServiceOrderDaoJPA ..|> ServiceOrderDao
+    ServiceItemDaoJPA ..|> ServiceItemDao
+}
+
+' =========================================================
+' SERVICES
+' =========================================================
 
 package "model.services" {
 
-  class ClientService {
-    - clients: Map<String, Client>
-    --
-    + registerClient(client: Client): void
-    + findClient(cpf: String): Client
-    + removeClient(client: Client): void
-    + getClients(): Collection<Client>
-  }
+    class ClientService {
+        - clientDao: ClientDao
+        --
+        + registerClient(client: Client): void
+        + findClientById(id: Long): Client
+        + findClientByCpf(cpf: String): Client
+        + findAllClients(): List
+        + removeClient(id: Long): void
+    }
 
-  class VehicleService {
-    - clientService: ClientService
-    --
-    + VehicleService(clientService: ClientService)
-    + registerVehicle(cpf: String, vehicle: Vehicle): void
-    + findVehicle(cpf: String, plate: String): Vehicle
-    + openServiceOrder(cpf, plate, description, observation): ServiceOrder
-    __VALIDAÇÃO IMPLEMENTADA__
-    « RN-08: bloqueia nova OS se já
-      existir uma ativa (OPEN ou
-      IN_PROGRESS) »
-  }
+    class VehicleService {
+        - clientService: ClientService
+        - vehicleDao: VehicleDao
+        --
+        + registerVehicle(clientId: Long, vehicle: Vehicle): void
+        + findVehicleById(id: Long): Vehicle
+        + findVehicleByPlate(plate: String): Vehicle
+        + findVehiclesByClient(clientId: Long): List
+        + removeVehicle(id: Long): void
+    }
+
+    class ServiceOrderService {
+        - vehicleService: VehicleService
+        - serviceOrderDao: ServiceOrderDao
+        --
+        + registerServiceOrder(vehicleId: Long, order: ServiceOrder): void
+        + findServiceOrderById(id: Long): ServiceOrder
+        + findServiceOrdersByVehicle(vehicleId: Long): List
+        + updateStatus(id: Long, status: OrderStatus): void
+        + removeServiceOrder(id: Long): void
+    }
 }
+
+' =========================================================
+' INFRASTRUCTURE
+' =========================================================
+
+package "model.infrastructure" {
+
+    class JPAUtil {
+        + getEntityManager(): EntityManager
+        + shutdown(): void
+    }
+}
+
+' =========================================================
+' APPLICATION
+' =========================================================
 
 package "application" {
-  class Main {
-    + main(args: String[]): void
-  }
-  note right of Main
-    Classe de teste manual —
-    exercita os 15 cenários do
-    fluxo completo (cadastro,
-    duplicidade, OS, status,
-    exceções).
-  end note
+
+    class Main {
+        + main(args: String[]): void
+    }
 }
 
-' ── Relacionamentos ──────────────────────────────────────
-Client        "1" o-- "0..*" Vehicle       : possui >
-Vehicle       "1" o-- "0..*" ServiceOrder   : gera >
-ServiceOrder  "1" *-- "1..*" ServiceItem    : contém >
-ServiceOrder  --> OrderStatus               : usa >
+' =========================================================
+' DOMAIN RELATIONSHIPS
+' =========================================================
 
-VehicleService --> ClientService : depende de >
-ClientService  ..> Client        : gerencia >
-VehicleService ..> Vehicle       : consulta via Client >
+Client "1" o-- "0..*" Vehicle : possui
+Vehicle "1" o-- "0..*" ServiceOrder : possui
+ServiceOrder "1" *-- "0..*" ServiceItem : contém
 
-Main ..> ClientService  : usa
-Main ..> VehicleService : usa
+Vehicle --> Client : pertence a
+ServiceOrder --> Vehicle : pertence a
+ServiceItem --> ServiceOrder : pertence a
 
-ServiceException <.. Client        : lança
-ServiceException <.. Vehicle       : lança
-ServiceException <.. ServiceOrder  : lança
-ServiceException <.. ClientService : lança
-ServiceException <.. VehicleService: lança
+ServiceOrder --> OrderStatus : utiliza
+
+' =========================================================
+' SERVICE DEPENDENCIES
+' =========================================================
+
+ClientService --> ClientDao : utiliza
+
+VehicleService --> VehicleDao : utiliza
+VehicleService --> ClientService : depende de
+
+ServiceOrderService --> ServiceOrderDao : utiliza
+ServiceOrderService --> VehicleService : depende de
+
+' =========================================================
+' DAO FACTORY
+' =========================================================
+
+DaoFactory ..> ClientDaoJPA : cria
+DaoFactory ..> VehicleDaoJPA : cria
+DaoFactory ..> ServiceOrderDaoJPA : cria
+DaoFactory ..> ServiceItemDaoJPA : cria
+
+' =========================================================
+' JPA INFRASTRUCTURE
+' =========================================================
+
+ClientDaoJPA --> JPAUtil : EntityManager
+VehicleDaoJPA --> JPAUtil : EntityManager
+ServiceOrderDaoJPA --> JPAUtil : EntityManager
+ServiceItemDaoJPA --> JPAUtil : EntityManager
+
+' =========================================================
+' EXCEPTIONS
+' =========================================================
+
+Client ..> DomainException
+Vehicle ..> DomainException
+ServiceOrder ..> DomainException
+ServiceItem ..> DomainException
+
+ClientService ..> ServiceException
+VehicleService ..> ServiceException
+ServiceOrderService ..> ServiceException
+
+ClientDaoJPA ..> DbException
+VehicleDaoJPA ..> DbException
+ServiceOrderDaoJPA ..> DbException
+ServiceItemDaoJPA ..> DbException
+
+' =========================================================
+' APPLICATION DEPENDENCIES
+' =========================================================
+
+Main ..> ClientService : utiliza
+Main ..> VehicleService : utiliza
+Main ..> ServiceOrderService : utiliza
 
 @enduml
+```
