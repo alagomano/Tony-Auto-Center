@@ -6,9 +6,11 @@ import jakarta.persistence.PersistenceException;
 import model.dao.ServiceItemDao;
 import model.entities.ServiceItem;
 import model.exception.DbException;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class ServiceItemDaoJPA implements ServiceItemDao {
     private final EntityManager entityManager;
     public ServiceItemDaoJPA(EntityManager entityManager){
@@ -16,50 +18,31 @@ public class ServiceItemDaoJPA implements ServiceItemDao {
     }
     @Override
     public void insert(ServiceItem serviceItem) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             entityManager.persist(serviceItem);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao inserir item.", e);
         }
     }
 
     @Override
     public void update(ServiceItem serviceItem) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             entityManager.merge(serviceItem);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao atualizar informações do item.", e);
         }
     }
 
     @Override
     public void deleteById(Long id) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
             ServiceItem serviceItem = entityManager.find(ServiceItem.class, id);
             if (serviceItem == null) {
                 throw new DbException("Item não encontrado.");
             }
-
-            transaction.begin();
             entityManager.remove(serviceItem);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao deletar item.", e);
         }
     }

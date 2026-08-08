@@ -1,15 +1,14 @@
 package model.dao.impl;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceException;
+import jakarta.persistence.*;
 import model.dao.VehicleDao;
 import model.entities.Vehicle;
 import model.exception.DbException;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class VehicleDaoJPA implements VehicleDao {
     private final EntityManager entityManager;
     public VehicleDaoJPA(EntityManager entityManager){
@@ -18,50 +17,31 @@ public class VehicleDaoJPA implements VehicleDao {
 
     @Override
     public void insert(Vehicle vehicle) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             entityManager.persist(vehicle);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao inserir Veículo.", e);
         }
     }
 
     @Override
     public void update(Vehicle vehicle) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             entityManager.merge(vehicle);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao atualizar informações do veículo.", e);
         }
     }
 
     @Override
     public void deleteById(Long id) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
             Vehicle vehicle = entityManager.find(Vehicle.class, id);
             if (vehicle == null) {
                 throw new DbException("Veículo não encontrado");
             }
-
-            transaction.begin();
             entityManager.remove(vehicle);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao deletar veículo.", e);
         }
     }

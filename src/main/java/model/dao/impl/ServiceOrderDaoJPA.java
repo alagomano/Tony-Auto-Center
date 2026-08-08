@@ -6,61 +6,43 @@ import jakarta.persistence.PersistenceException;
 import model.dao.ServiceOrderDao;
 import model.entities.ServiceOrder;
 import model.exception.DbException;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class ServiceOrderDaoJPA implements ServiceOrderDao {
-
     private final EntityManager entityManager;
     public ServiceOrderDaoJPA(EntityManager entityManager){
         this.entityManager = entityManager;
     }
     @Override
     public void insert(ServiceOrder serviceOrder) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             entityManager.persist(serviceOrder);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao inserir ordem de serviço.", e);
         }
     }
 
     @Override
     public void update(ServiceOrder serviceOrder) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             entityManager.merge(serviceOrder);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao atualizar informações da ordem de serviço.", e);
         }
     }
 
     @Override
     public void deleteById(Long id) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
             ServiceOrder serviceOrder = entityManager.find(ServiceOrder.class, id);
             if (serviceOrder == null) {
                 throw new DbException("Ordem de serviço não encontrada.");
             }
-
-            transaction.begin();
             entityManager.remove(serviceOrder);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao deletar ordeem de serviço.", e);
         }
     }

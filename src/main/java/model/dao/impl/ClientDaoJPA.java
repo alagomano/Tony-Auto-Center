@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import model.dao.ClientDao;
 import model.entities.Client;
 import model.exception.DbException;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class ClientDaoJPA implements ClientDao {
-
+    @PersistenceContext
     private final EntityManager entityManager;
     public ClientDaoJPA(EntityManager entityManager) {
         this.entityManager = entityManager;
@@ -33,50 +35,31 @@ public class ClientDaoJPA implements ClientDao {
 
     @Override
     public void insert(Client client) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             entityManager.persist(client);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao inserir cliente.", e);
         }
     }
 
     @Override
     public void update(Client client) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             entityManager.merge(client);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao atualizar dados do cliente.", e);
         }
     }
 
     @Override
     public void deleteById(Long id) {
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
             Client client = entityManager.find(Client.class, id);
             if (client == null) {
                 throw new DbException("Cliente não encontrado");
             }
-
-            transaction.begin();
             entityManager.remove(client);
-            transaction.commit();
         }catch (PersistenceException e){
-            if(transaction.isActive()){
-                transaction.rollback();
-            }
             throw new DbException("Erro ao deletar cliente.", e);
         }
     }
