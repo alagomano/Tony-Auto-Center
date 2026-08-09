@@ -7,6 +7,7 @@ import model.entities.ServiceOrder;
 import model.entities.Vehicle;
 import model.exception.ServiceException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Service
@@ -49,7 +50,7 @@ public class VehicleService {
         }
     }
 
-
+    @Transactional
     public ServiceOrder openServiceOrder(Long vehicleId, String descriptionProblem, String observations){
         validateID(vehicleId);
         Vehicle vehicle = findVehicleById(vehicleId);
@@ -62,7 +63,7 @@ public class VehicleService {
         serviceOrderDao.insert(order);
         return order;
     }
-
+    @Transactional
     public void registerVehicle(Long clientId, Vehicle vehicle){
         validateID(clientId);
         if(vehicle == null){
@@ -73,38 +74,39 @@ public class VehicleService {
         client.addVehicle(vehicle);
         vehicleDao.insert(vehicle);
     }
-
+    @Transactional
     public void updateVehicle(Vehicle vehicle){
         validateVehicleExists(vehicle);
         validateID(vehicle.getId());
         validateVehicle(vehicle);
         vehicleDao.update(vehicle);
     }
-
+    @Transactional
     public void removeVehicle(Long vehicleId){
         validateID(vehicleId);
         vehicleDao.deleteById(vehicleId);
     }
-
+    @Transactional
     public Vehicle findVehicleById(Long vehicleId){
         validateID(vehicleId);
         Vehicle vehicle = vehicleDao.findById(vehicleId);
         validateVehicleExists(vehicle);
         return vehicle;
     }
+    @Transactional
     public Vehicle findVehicleByPlate(String plate){
         validatePlate(plate);
         Vehicle vehicle = vehicleDao.findByPlate(plate);
         validateVehicleExists(vehicle);
         return vehicle;
     }
-
+    @Transactional
     public List<ServiceOrder> getOrders(Long vehicleId){
         validateID(vehicleId);
         findVehicleById(vehicleId);
         return serviceOrderDao.findByVehicle(vehicleId);
     }
-
+    @Transactional
     public List<Vehicle> getVehicles(){
         return vehicleDao.findAll();
     }
