@@ -54,38 +54,39 @@ public class ClientService {
         validateClient(client);
         clientDao.insert(client);
     }
-
+    @Transactional
     public void updateClient(Client client){
         validateClientExists(client);
         validateID(client.getId());
         clientDao.update(client);
     }
-
+    @Transactional
     public void removeClient(Long clientId){
         validateID(clientId);
         clientDao.deleteById(clientId);
     }
-
+    @Transactional
     public Client findClientByCpf(String cpf){
         validateCPF(cpf);
         Client client = clientDao.findByCpf(cpf);
         validateClientExists(client);
         return findClientById(client.getId());
     }
+    @Transactional
     public Client findClientById(Long clientId){
         validateID(clientId);
         Client client = clientDao.findById(clientId);
         validateClientExists(client);
         return client;
     }
-
+    @Transactional
     public Collection<Vehicle> getVehiclesByClient(Long clientId){
         validateID(clientId);
         Client client = findClientById(clientId);
 
         return client.getVehicles();
     }
-
+    @Transactional
     public List<Client> getClients(){
         return clientDao.findAll();
     }
