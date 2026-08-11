@@ -6,8 +6,10 @@ import model.entities.ServiceItem;
 import model.entities.ServiceOrder;
 import model.exception.ServiceException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 @Service
 public class ServiceOrderService {
@@ -35,7 +37,7 @@ public class ServiceOrderService {
             throw new ServiceException("Id inválido.");
         }
     }
-
+    @Transactional
     public void addItemToOrder(Long serviceOrderId, ServiceItem item){
         validateID(serviceOrderId);
         validateServiceItem(item);
@@ -43,14 +45,14 @@ public class ServiceOrderService {
         serviceOrder.addItem(item);
         serviceOrderDao.update(serviceOrder);
     }
-
+    @Transactional
     public ServiceOrder findServiceOrderById(Long serviceOrderId){
         validateID(serviceOrderId);
         ServiceOrder serviceOrder = serviceOrderDao.findById(serviceOrderId);
         validateServiceOrder(serviceOrder);
         return serviceOrder;
     }
-
+    @Transactional
     public void updateServiceOrder(ServiceOrder serviceOrder){
         validateServiceOrder(serviceOrder);
         validateID(serviceOrder.getId());
@@ -58,13 +60,13 @@ public class ServiceOrderService {
 
         serviceOrderDao.update(serviceOrder);
     }
-
+    @Transactional
     public void deleteServiceOrderById(Long serviceOrderId){
         validateID(serviceOrderId);
         findServiceOrderById(serviceOrderId);
         serviceOrderDao.deleteById(serviceOrderId);
     }
-
+    @Transactional
     public ServiceItem findServiceItemById(Long serviceOrderId, Long serviceItemId){
         validateID(serviceOrderId);
         validateID(serviceItemId);
@@ -79,7 +81,7 @@ public class ServiceOrderService {
 
         return item;
     }
-
+    @Transactional
     public void updateServiceItem(Long serviceOrderId, ServiceItem serviceItem){
         validateID(serviceOrderId);
         validateServiceItem(serviceItem);
@@ -93,7 +95,7 @@ public class ServiceOrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
         serviceOrderDao.update(order);
     }
-
+    @Transactional
     public void deleteServiceItemById(Long serviceOrderId, Long serviceItemId){
         validateID(serviceItemId);
         ServiceOrder order = findServiceOrderById(serviceOrderId);
@@ -101,30 +103,30 @@ public class ServiceOrderService {
         order.deleteItem(item);
         serviceOrderDao.update(order);
     }
-
+    @Transactional
     public void startServiceOrder(Long serviceOrderId){
         ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
         serviceOrder.start();
         serviceOrderDao.update(serviceOrder);
     }
-
+    @Transactional
     public void closeServiceOrder(Long serviceOrderId){
         ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
         serviceOrder.close();
         serviceOrderDao.update(serviceOrder);
     }
-
+    @Transactional
     public void deliverServiceOrder(Long serviceOrderId){
         ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
         serviceOrder.deliver();
         serviceOrderDao.update(serviceOrder);
     }
-
+    @Transactional
     public List<ServiceItem> getItemsByOrder(Long serviceOrderId){
         ServiceOrder order = findServiceOrderById(serviceOrderId);
-        return order.getItems();
+        return new ArrayList<>(order.getItems());
     }
-
+    @Transactional
     public List<ServiceOrder> findAll(){
         return serviceOrderDao.findAll();
     }
