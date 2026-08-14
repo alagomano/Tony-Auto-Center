@@ -1,23 +1,24 @@
 package model.services;
 
-import model.dao.ClientDao;
 import model.entities.Client;
 import model.entities.Vehicle;
 import model.exception.ServiceException;
+import model.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClientService {
 
-    private final ClientDao clientDao;
+    private final ClientRepository clientRepository;
     @Autowired
-    public ClientService(ClientDao clientDao) {
-        this.clientDao = clientDao;
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
     }
 
     private void validateClient(Client client){
@@ -49,35 +50,42 @@ public class ClientService {
             throw new ServiceException("ID inválido.");
         }
     }
-    @Transactional
-    public void registerClient(Client client){
-        validateClient(client);
-        clientDao.insert(client);
+
+    private void updateData(Client clientBefore, Client clientAfter){
+        clientBefore.setName(clientAfter.getName());
+        clientBefore.setPhone(clientAfter.getPhone());
+        clientBefore.setAddress(clientAfter.getAddress());
     }
     @Transactional
-    public void updateClient(Client client){
-        validateClientExists(client);
-        validateID(client.getId());
-        clientDao.update(client);
+    public Client registerClient(Client client){
+        validateClient(client);
+        return clientRepository.save(client);
+    }
+    @Transactional
+    public Client updateClient(Long clientId, Client client){
+        Client entityClient = findClientById(clientId);
+        updateData(entityClient, client);
+        return clientRepository.save(entityClient);
     }
     @Transactional
     public void removeClient(Long clientId){
         validateID(clientId);
-        clientDao.deleteById(clientId);
+        if(!clientRepository.existsById(clientId)){
+            throw new ServiceException("Cliente não encontrado.");
+        }
+        clientRepository.deleteById(clientId);
     }
     @Transactional
     public Client findClientByCpf(String cpf){
         validateCPF(cpf);
-        Client client = clientDao.findByCpf(cpf);
-        validateClientExists(client);
-        return findClientById(client.getId());
+        Optional<Client> client = clientRepository.findByCpf(cpf);
+        return client.orElseThrow(() -> new ServiceException("Cliente não encontrado"));
     }
     @Transactional
     public Client findClientById(Long clientId){
         validateID(clientId);
-        Client client = clientDao.findById(clientId);
-        validateClientExists(client);
-        return client;
+        Optional<Client> client = clientRepository.findById(clientId);
+        return client.orElseThrow(() -> new ServiceException("Cliente não encontrado"));
     }
     @Transactional
     public Collection<Vehicle> getVehiclesByClient(Long clientId){
@@ -88,7 +96,7 @@ public class ClientService {
     }
     @Transactional
     public List<Client> getClients(){
-        return clientDao.findAll();
+        return clientRepository.findAll();
     }
 
 }
