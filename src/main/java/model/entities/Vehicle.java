@@ -1,5 +1,6 @@
 package model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import model.enums.OrderStatus;
 import model.exception.DomainException;
@@ -27,6 +28,7 @@ public class Vehicle implements Serializable {
     private Integer year;
     @ManyToOne(optional = false)
     @JoinColumn(name = "client_id", nullable = false)
+    @JsonIgnore
     private Client client;
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)

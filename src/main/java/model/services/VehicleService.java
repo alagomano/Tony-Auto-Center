@@ -50,6 +50,11 @@ public class VehicleService {
         }
     }
 
+    private void updateData(Vehicle vehicleBefore, Vehicle vehicleAfter){
+        vehicleBefore.setPlate(vehicleAfter.getPlate());
+        vehicleBefore.setClient(vehicleAfter.getClient());
+    }
+
     @Transactional
     public ServiceOrder openServiceOrder(Long vehicleId, String descriptionProblem, String observations){
         validateID(vehicleId);
@@ -64,7 +69,7 @@ public class VehicleService {
         return order;
     }
     @Transactional
-    public void registerVehicle(Long clientId, Vehicle vehicle){
+    public Vehicle registerVehicle(Long clientId, Vehicle vehicle){
         validateID(clientId);
         if(vehicle == null){
             throw new ServiceException("Veículo inválido.");
@@ -73,13 +78,18 @@ public class VehicleService {
         validatePlate(vehicle.getPlate());
         client.addVehicle(vehicle);
         vehicleDao.insert(vehicle);
+
+        return vehicle;
     }
     @Transactional
-    public void updateVehicle(Vehicle vehicle){
+    public Vehicle updateVehicle(Long vehicleId, Vehicle vehicle){
+        validateID(vehicleId);
         validateVehicleExists(vehicle);
-        validateID(vehicle.getId());
         validateVehicle(vehicle);
-        vehicleDao.update(vehicle);
+        Vehicle entityVehicle = findVehicleById(vehicleId);
+        updateData(entityVehicle, vehicle);
+        vehicleDao.update(entityVehicle);
+        return entityVehicle;
     }
     @Transactional
     public void removeVehicle(Long vehicleId){
