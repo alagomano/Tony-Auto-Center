@@ -5,7 +5,9 @@ import model.entities.Vehicle;
 import model.services.VehicleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -44,7 +46,24 @@ public class VehicleController {
     @PostMapping("clients/{clientId}")
     public ResponseEntity<Vehicle> insert(@PathVariable Long clientId, @RequestBody Vehicle vehicle){
         Vehicle saveVehicle = vehicleService.registerVehicle(clientId, vehicle);
-        return ResponseEntity.ok().body(saveVehicle);
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{vehicleId}")
+                .buildAndExpand(saveVehicle.getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(saveVehicle);
+    }
+
+    @PostMapping("vehicles/{vehicleId}")
+    public ResponseEntity<ServiceOrder> openServiceOrder(@PathVariable Long vehicleId, @RequestBody ServiceOrder serviceOrderRequest){
+        ServiceOrder order = vehicleService.openServiceOrder(vehicleId, serviceOrderRequest.getProblemDescription(), serviceOrderRequest.getObservations());
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{orderId}")
+                .buildAndExpand(order.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(order);
     }
 
     @DeleteMapping("/{vehicleId}")
