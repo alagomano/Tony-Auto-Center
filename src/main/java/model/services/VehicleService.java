@@ -1,25 +1,27 @@
 package model.services;
 
 import model.dao.ServiceOrderDao;
-import model.dao.VehicleDao;
 import model.entities.Client;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
 import model.exception.ServiceException;
+import model.repositories.VehicleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class VehicleService {
 
     private final ClientService clientService;
-    private final VehicleDao vehicleDao;
+    private final VehicleRepository vehicleRepository;
     private final ServiceOrderDao serviceOrderDao;
 
-    public VehicleService(ClientService clientService, VehicleDao vehicleDao, ServiceOrderDao serviceOrderDao){
+    public VehicleService(ClientService clientService, VehicleRepository vehicleRepository, ServiceOrderDao serviceOrderDao){
         this.clientService = clientService;
-        this.vehicleDao = vehicleDao;
+        this.vehicleRepository = vehicleRepository;
         this.serviceOrderDao = serviceOrderDao;
     }
 
@@ -77,7 +79,7 @@ public class VehicleService {
         Client client = clientService.findClientById(clientId);
         validatePlate(vehicle.getPlate());
         client.addVehicle(vehicle);
-        vehicleDao.insert(vehicle);
+        vehicleRepository.save(vehicle);
 
         return vehicle;
     }
@@ -88,27 +90,25 @@ public class VehicleService {
         validateVehicle(vehicle);
         Vehicle entityVehicle = findVehicleById(vehicleId);
         updateData(entityVehicle, vehicle);
-        vehicleDao.update(entityVehicle);
+        vehicleRepository.save(entityVehicle);
         return entityVehicle;
     }
     @Transactional
     public void removeVehicle(Long vehicleId){
         validateID(vehicleId);
-        vehicleDao.deleteById(vehicleId);
+        vehicleRepository.deleteById(vehicleId);
     }
     @Transactional
     public Vehicle findVehicleById(Long vehicleId){
         validateID(vehicleId);
-        Vehicle vehicle = vehicleDao.findById(vehicleId);
-        validateVehicleExists(vehicle);
-        return vehicle;
+        Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
+        return vehicle.orElseThrow(() -> new ServiceException("Veículo não encontrado."));
     }
     @Transactional
     public Vehicle findVehicleByPlate(String plate){
         validatePlate(plate);
-        Vehicle vehicle = vehicleDao.findByPlate(plate);
-        validateVehicleExists(vehicle);
-        return vehicle;
+        Optional<Vehicle> vehicle = vehicleRepository.findByPlate(plate);
+        return vehicle.orElseThrow(() -> new ServiceException("Veículo não encontrado."));
     }
     @Transactional
     public List<ServiceOrder> getOrders(Long vehicleId){
@@ -118,7 +118,7 @@ public class VehicleService {
     }
     @Transactional
     public List<Vehicle> getVehicles(){
-        return vehicleDao.findAll();
+        return vehicleRepository.findAll();
     }
 
 }
