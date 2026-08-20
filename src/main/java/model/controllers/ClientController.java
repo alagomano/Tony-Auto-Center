@@ -1,12 +1,14 @@
 package model.controllers;
 
 import model.entities.Client;
+import model.entities.Vehicle;
 import model.services.ClientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -54,6 +56,12 @@ public class ClientController {
     public ResponseEntity<Void> delete(@PathVariable Long clientId){
         clientService.removeClient(clientId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{clientId}/vehicles")
+    public ResponseEntity<Collection<Vehicle>> getVehiclesByClient(@PathVariable Long clientId){
+        Collection<Vehicle> vehicles = clientService.getVehiclesByClient(clientId);
+        return ResponseEntity.ok().body(vehicles);
     }
 
 }
