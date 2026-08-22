@@ -1,5 +1,7 @@
 package model.controllers;
 
+import model.dtos.ClientCreateDTO;
+import model.dtos.ClientUpdateDTO;
 import model.entities.Client;
 import model.entities.Vehicle;
 import model.services.ClientService;
@@ -39,17 +41,17 @@ public class ClientController {
 
 
     @PostMapping
-    public ResponseEntity<Client> insert(@RequestBody Client client){
-        client = clientService.registerClient(client);
+    public ResponseEntity<Client> insert(@RequestBody ClientCreateDTO clientCreateDTO){
+        Client saveClient = clientService.registerClient(clientCreateDTO);
         URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{clientId}").buildAndExpand(client.getId()).toUri();
-        return ResponseEntity.created(uri).body(client);
+                .fromCurrentRequest().path("/{clientId}").buildAndExpand(saveClient.getId()).toUri();
+        return ResponseEntity.created(uri).body(saveClient);
     }
 
     @PutMapping("/{clientId}")
-    public ResponseEntity<Client> update(@PathVariable Long clientId, @RequestBody Client client){
-        client = clientService.updateClient(clientId, client);
-        return ResponseEntity.ok().body(client);
+    public ResponseEntity<Client> update(@PathVariable Long clientId, @RequestBody ClientUpdateDTO clientUpdateDTO){
+        Client updateClient = clientService.updateClient(clientId, clientUpdateDTO);
+        return ResponseEntity.ok().body(updateClient);
     }
 
     @DeleteMapping("/{clientId}")
