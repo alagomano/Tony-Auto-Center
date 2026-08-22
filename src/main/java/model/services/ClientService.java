@@ -1,5 +1,7 @@
 package model.services;
 
+import model.dtos.ClientCreateDTO;
+import model.dtos.ClientUpdateDTO;
 import model.entities.Client;
 import model.entities.Vehicle;
 import model.exception.ServiceException;
@@ -57,13 +59,27 @@ public class ClientService {
         clientBefore.setAddress(clientAfter.getAddress());
     }
     @Transactional
-    public Client registerClient(Client client){
+    public Client registerClient(ClientCreateDTO dto){
+        Client client = new Client();
+        client.setName(dto.getName());
+        client.setCpf(dto.getCpf());
+        client.setPhone(dto.getPhone());
+        client.setAddress(dto.getAddress());
         validateClient(client);
+        if(clientRepository.findByCpf(client.getCpf()).isPresent()){
+            throw new ServiceException("CPF já cadastrado.");
+        }
         return clientRepository.save(client);
     }
     @Transactional
-    public Client updateClient(Long clientId, Client client){
+    public Client updateClient(Long clientId, ClientUpdateDTO dto){
         Client entityClient = findClientById(clientId);
+
+        Client client = new Client();
+        client.setName(dto.getName());
+        client.setPhone(dto.getPhone());
+        client.setAddress(dto.getAddress());
+
         updateData(entityClient, client);
         return clientRepository.save(entityClient);
     }
