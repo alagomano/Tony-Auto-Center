@@ -1,6 +1,8 @@
 package model.services;
 
 import model.dao.ServiceOrderDao;
+import model.dtos.VehicleCreateDTO;
+import model.dtos.VehicleUpdateDTO;
 import model.entities.Client;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
@@ -52,11 +54,6 @@ public class VehicleService {
         }
     }
 
-    private void updateData(Vehicle vehicleBefore, Vehicle vehicleAfter){
-        vehicleBefore.setPlate(vehicleAfter.getPlate());
-        vehicleBefore.setClient(vehicleAfter.getClient());
-    }
-
     @Transactional
     public ServiceOrder openServiceOrder(Long vehicleId, String descriptionProblem, String observations){
         validateID(vehicleId);
@@ -71,25 +68,31 @@ public class VehicleService {
         return order;
     }
     @Transactional
-    public Vehicle registerVehicle(Long clientId, Vehicle vehicle){
-        validateID(clientId);
-        if(vehicle == null){
-            throw new ServiceException("Veículo inválido.");
-        }
-        Client client = clientService.findClientById(clientId);
-        validatePlate(vehicle.getPlate());
+    public Vehicle registerVehicle(VehicleCreateDTO dto){
+        Vehicle vehicle = new Vehicle();
+        vehicle.setPlate(dto.getPlate());
+        vehicle.setBrand(dto.getBrand());
+        vehicle.setModel(dto.getModel());
+        vehicle.setYear(dto.getYear());
+
+        Client client = clientService.findClientByCpf(dto.getClientCpf());
+        vehicle.setClient(client);
+
+        validateVehicle(vehicle);
         client.addVehicle(vehicle);
         vehicleRepository.save(vehicle);
 
         return vehicle;
     }
     @Transactional
-    public Vehicle updateVehicle(Long vehicleId, Vehicle vehicle){
-        validateID(vehicleId);
-        validateVehicleExists(vehicle);
-        validateVehicle(vehicle);
+    public Vehicle updateVehicle(Long vehicleId, VehicleUpdateDTO dto){
+        String clientCpf = dto.getClientCpf();
+        Client client = clientService.findClientByCpf(clientCpf);
+
         Vehicle entityVehicle = findVehicleById(vehicleId);
-        updateData(entityVehicle, vehicle);
+        entityVehicle.setPlate(dto.getPlate());
+        entityVehicle.setClient(client);
+
         vehicleRepository.save(entityVehicle);
         return entityVehicle;
     }
