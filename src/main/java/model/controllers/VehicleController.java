@@ -1,5 +1,8 @@
 package model.controllers;
 
+import model.dtos.ServiceOrderRequestDTO;
+import model.dtos.VehicleCreateDTO;
+import model.dtos.VehicleUpdateDTO;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
 import model.services.VehicleService;
@@ -38,14 +41,14 @@ public class VehicleController {
     }
 
     @PutMapping("/{vehicleId}")
-    public ResponseEntity<Vehicle> update(@PathVariable Long vehicleId, @RequestBody Vehicle vehicle){
-        Vehicle updateVehicle = vehicleService.updateVehicle(vehicleId, vehicle);
+    public ResponseEntity<Vehicle> update(@PathVariable Long vehicleId, @RequestBody VehicleUpdateDTO vehicleUpdateDTO){
+        Vehicle updateVehicle = vehicleService.updateVehicle(vehicleId, vehicleUpdateDTO);
         return ResponseEntity.ok().body(updateVehicle);
     }
 
-    @PostMapping("clients/{clientId}")
-    public ResponseEntity<Vehicle> insert(@PathVariable Long clientId, @RequestBody Vehicle vehicle){
-        Vehicle saveVehicle = vehicleService.registerVehicle(clientId, vehicle);
+    @PostMapping
+    public ResponseEntity<Vehicle> insert(@RequestBody VehicleCreateDTO vehicleCreateDTO){
+        Vehicle saveVehicle = vehicleService.registerVehicle(vehicleCreateDTO);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{vehicleId}")
@@ -54,9 +57,9 @@ public class VehicleController {
         return ResponseEntity.created(uri).body(saveVehicle);
     }
 
-    @PostMapping("vehicles/{vehicleId}")
-    public ResponseEntity<ServiceOrder> openServiceOrder(@PathVariable Long vehicleId, @RequestBody ServiceOrder serviceOrderRequest){
-        ServiceOrder order = vehicleService.openServiceOrder(vehicleId, serviceOrderRequest.getProblemDescription(), serviceOrderRequest.getObservations());
+    @PostMapping("/{vehicleId}/orders")
+    public ResponseEntity<ServiceOrder> openServiceOrder(@PathVariable Long vehicleId, @RequestBody ServiceOrderRequestDTO orderRequestDTO){
+        ServiceOrder order = vehicleService.openServiceOrder(vehicleId, orderRequestDTO.getProblemDescription(), orderRequestDTO.getObservations());
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{orderId}")
