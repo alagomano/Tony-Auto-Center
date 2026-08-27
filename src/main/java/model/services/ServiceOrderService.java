@@ -1,24 +1,28 @@
 package model.services;
 
-import model.dao.ServiceItemDao;
-import model.dao.ServiceOrderDao;
+import model.dtos.ServiceItemRequestDTO;
+import model.dtos.ServiceOrderRequestDTO;
 import model.entities.ServiceItem;
 import model.entities.ServiceOrder;
 import model.exception.ServiceException;
+import model.repositories.ServiceItemRepository;
+import model.repositories.ServiceOrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class ServiceOrderService {
-    private final ServiceOrderDao serviceOrderDao;
-    private final ServiceItemDao serviceItemDao;
+    private final ServiceOrderRepository serviceOrderRepository;
+    private final ServiceItemRepository serviceItemRepository;
 
-    public ServiceOrderService(ServiceOrderDao serviceOrderDao, ServiceItemDao serviceItemDao) {
-        this.serviceOrderDao = serviceOrderDao;
-        this.serviceItemDao = serviceItemDao;
+    public ServiceOrderService(ServiceOrderRepository serviceOrderRepository, ServiceItemRepository serviceItemRepository) {
+        this.serviceOrderRepository = serviceOrderRepository;
+        this.serviceItemRepository = serviceItemRepository;
     }
 
     private void validateServiceOrder(ServiceOrder serviceOrder){
@@ -37,34 +41,46 @@ public class ServiceOrderService {
             throw new ServiceException("Id inválido.");
         }
     }
+
+    private void updateData(ServiceOrder orderBefore, ServiceOrderRequestDTO orderRequestDTOAfter){
+        orderBefore.setProblemDescription(orderRequestDTOAfter.getProblemDescription());
+        orderBefore.setObservations(orderRequestDTOAfter.getObservations());
+    }
     @Transactional
-    public void addItemToOrder(Long serviceOrderId, ServiceItem item){
+    public ServiceItem addItemToOrder(Long serviceOrderId, ServiceItemRequestDTO dto){
         validateID(serviceOrderId);
-        validateServiceItem(item);
+        ServiceItem item = new ServiceItem();
+        item.setDescription(dto.getDescription());
+        item.setQuantity(dto.getQuantity());
+        item.setUnitValue(dto.getUnitValue());
+
         ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
+        item.setServiceOrder(serviceOrder);
         serviceOrder.addItem(item);
-        serviceOrderDao.update(serviceOrder);
+        serviceOrderRepository.save(serviceOrder);
+        return serviceOrder.getItems().get(serviceOrder.getItems().size() - 1);
     }
     @Transactional
     public ServiceOrder findServiceOrderById(Long serviceOrderId){
         validateID(serviceOrderId);
-        ServiceOrder serviceOrder = serviceOrderDao.findById(serviceOrderId);
-        validateServiceOrder(serviceOrder);
-        return serviceOrder;
+        Optional<ServiceOrder> serviceOrder = serviceOrderRepository.findById(serviceOrderId);
+        return serviceOrder.orElseThrow(() -> new ServiceException("Ordem de serviço não encontrada."));
     }
     @Transactional
-    public void updateServiceOrder(ServiceOrder serviceOrder){
-        validateServiceOrder(serviceOrder);
-        validateID(serviceOrder.getId());
-        findServiceOrderById(serviceOrder.getId());
+    public ServiceOrder updateServiceOrder(Long serviceId, ServiceOrderRequestDTO orderRequestDTO){
+        validateID(serviceId);
+        ServiceOrder entityOrder = findServiceOrderById(serviceId);
+        entityOrder.validateState();
 
-        serviceOrderDao.update(serviceOrder);
+        updateData(entityOrder, orderRequestDTO);
+        serviceOrderRepository.save(entityOrder);
+        return entityOrder;
     }
     @Transactional
     public void deleteServiceOrderById(Long serviceOrderId){
         validateID(serviceOrderId);
         findServiceOrderById(serviceOrderId);
-        serviceOrderDao.deleteById(serviceOrderId);
+        serviceOrderRepository.deleteById(serviceOrderId);
     }
     @Transactional
     public ServiceItem findServiceItemById(Long serviceOrderId, Long serviceItemId){
@@ -82,18 +98,23 @@ public class ServiceOrderService {
         return item;
     }
     @Transactional
-    public void updateServiceItem(Long serviceOrderId, ServiceItem serviceItem){
+    public ServiceItem updateServiceItem(Long serviceOrderId, Long itemId, ServiceItemRequestDTO itemDTO){
         validateID(serviceOrderId);
-        validateServiceItem(serviceItem);
 
         ServiceOrder order = findServiceOrderById(serviceOrderId);
-        findServiceItemById(serviceOrderId, serviceItem.getId());
+        ServiceItem item = findServiceItemById(serviceOrderId, itemId);
 
-        serviceItemDao.update(serviceItem);
+        item.setDescription(itemDTO.getDescription());
+        item.setQuantity(itemDTO.getQuantity());
+        item.setUnitValue(itemDTO.getUnitValue());
+
+        serviceItemRepository.save(item);
         order.setTotalValue(order.getItems().stream()
                 .map(ServiceItem::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
-        serviceOrderDao.update(order);
+        serviceOrderRepository.save(order);
+
+        return item;
     }
     @Transactional
     public void deleteServiceItemById(Long serviceOrderId, Long serviceItemId){
@@ -101,25 +122,25 @@ public class ServiceOrderService {
         ServiceOrder order = findServiceOrderById(serviceOrderId);
         ServiceItem item = findServiceItemById(serviceOrderId, serviceItemId);
         order.deleteItem(item);
-        serviceOrderDao.update(order);
+        serviceOrderRepository.save(order);
     }
     @Transactional
     public void startServiceOrder(Long serviceOrderId){
         ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
         serviceOrder.start();
-        serviceOrderDao.update(serviceOrder);
+        serviceOrderRepository.save(serviceOrder);
     }
     @Transactional
     public void closeServiceOrder(Long serviceOrderId){
         ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
         serviceOrder.close();
-        serviceOrderDao.update(serviceOrder);
+        serviceOrderRepository.save(serviceOrder);
     }
     @Transactional
     public void deliverServiceOrder(Long serviceOrderId){
         ServiceOrder serviceOrder = findServiceOrderById(serviceOrderId);
         serviceOrder.deliver();
-        serviceOrderDao.update(serviceOrder);
+        serviceOrderRepository.save(serviceOrder);
     }
     @Transactional
     public List<ServiceItem> getItemsByOrder(Long serviceOrderId){
@@ -128,7 +149,7 @@ public class ServiceOrderService {
     }
     @Transactional
     public List<ServiceOrder> findAll(){
-        return serviceOrderDao.findAll();
+        return serviceOrderRepository.findAll();
     }
 
 }
