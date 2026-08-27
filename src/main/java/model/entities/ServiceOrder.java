@@ -1,5 +1,6 @@
 package model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import model.enums.OrderStatus;
 import model.exception.DomainException;
@@ -32,6 +33,7 @@ public class ServiceOrder implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "vehicle_id", nullable = false)
+    @JsonIgnore
     private Vehicle vehicle;
     @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<ServiceItem> items = new ArrayList<>();
@@ -131,7 +133,14 @@ public class ServiceOrder implements Serializable {
         }
     }
 
+    public void validateState(){
+        if(this.status == OrderStatus.FINISHED || this.status == OrderStatus.DELIVERED){
+            throw new DomainException("Não é possível alterar dados de uma ordem de serviço com status " + this.status);
+        }
+    }
+
     public void addItem(ServiceItem item){
+        validateState();
         validateItem(item);
         item.setServiceOrder(this);
         items.add(item);
@@ -139,6 +148,7 @@ public class ServiceOrder implements Serializable {
     }
 
     public void deleteItem(ServiceItem item){
+        validateState();
         validateItem(item);
         items.remove(item);
         totalValue = calculateTotal();
@@ -201,7 +211,4 @@ public class ServiceOrder implements Serializable {
                 " | " + status +
                 " | Valor Total: " + totalValue;
     }
-
-
-
 }
