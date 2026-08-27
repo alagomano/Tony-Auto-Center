@@ -1,12 +1,12 @@
 package model.services;
 
-import model.dao.ServiceOrderDao;
 import model.dtos.VehicleCreateDTO;
 import model.dtos.VehicleUpdateDTO;
 import model.entities.Client;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
 import model.exception.ServiceException;
+import model.repositories.ServiceOrderRepository;
 import model.repositories.VehicleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +19,12 @@ public class VehicleService {
 
     private final ClientService clientService;
     private final VehicleRepository vehicleRepository;
-    private final ServiceOrderDao serviceOrderDao;
+    private final ServiceOrderRepository serviceOrderRepository;
 
-    public VehicleService(ClientService clientService, VehicleRepository vehicleRepository, ServiceOrderDao serviceOrderDao){
+    public VehicleService(ClientService clientService, VehicleRepository vehicleRepository, ServiceOrderRepository serviceOrderRepository){
         this.clientService = clientService;
         this.vehicleRepository = vehicleRepository;
-        this.serviceOrderDao = serviceOrderDao;
+        this.serviceOrderRepository = serviceOrderRepository;
     }
 
     private void validateVehicleExists(Vehicle vehicle){
@@ -64,7 +64,7 @@ public class VehicleService {
         }
 
         ServiceOrder order = vehicle.openServiceOrder(descriptionProblem, observations);
-        serviceOrderDao.insert(order);
+        serviceOrderRepository.save(order);
         return order;
     }
     @Transactional
@@ -114,10 +114,10 @@ public class VehicleService {
         return vehicle.orElseThrow(() -> new ServiceException("Veículo não encontrado."));
     }
     @Transactional
-    public List<ServiceOrder> getOrders(Long vehicleId){
+    public Optional<ServiceOrder> getOrders(Long vehicleId){
         validateID(vehicleId);
         findVehicleById(vehicleId);
-        return serviceOrderDao.findByVehicle(vehicleId);
+        return serviceOrderRepository.findById(vehicleId);
     }
     @Transactional
     public List<Vehicle> getVehicles(){

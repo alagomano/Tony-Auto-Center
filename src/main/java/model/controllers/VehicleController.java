@@ -12,6 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/vehicles")
@@ -76,8 +77,8 @@ public class VehicleController {
     }
 
     @GetMapping("/{vehicleId}/orders")
-    public ResponseEntity<List<ServiceOrder>> getOrdersByVehicle(@PathVariable Long vehicleId){
-        List<ServiceOrder> orders = vehicleService.getOrders(vehicleId);
+    public ResponseEntity<Optional<ServiceOrder>> getOrdersByVehicle(@PathVariable Long vehicleId){
+        Optional<ServiceOrder> orders = vehicleService.getOrders(vehicleId);
         return ResponseEntity.ok().body(orders);
     }
 }
