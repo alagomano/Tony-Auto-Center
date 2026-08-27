@@ -1,5 +1,6 @@
 package model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import model.exception.DomainException;
 
@@ -21,6 +22,7 @@ public class ServiceItem implements Serializable {
     private BigDecimal unitValue;
     @ManyToOne(optional = false)
     @JoinColumn(name = "service_order_id", nullable = false)
+    @JsonIgnore
     private ServiceOrder serviceOrder;
 
     public ServiceItem(){}
