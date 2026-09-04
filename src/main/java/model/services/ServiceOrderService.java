@@ -102,6 +102,8 @@ public class ServiceOrderService {
         validateID(serviceOrderId);
 
         ServiceOrder order = findServiceOrderById(serviceOrderId);
+        order.validateState();
+
         ServiceItem item = findServiceItemById(serviceOrderId, itemId);
 
         item.setDescription(itemDTO.getDescription());
