@@ -117,7 +117,7 @@ public class VehicleService {
     public Optional<ServiceOrder> getOrders(Long vehicleId){
         validateID(vehicleId);
         findVehicleById(vehicleId);
-        return serviceOrderRepository.findById(vehicleId);
+        return serviceOrderRepository.findByVehicleId(vehicleId);
     }
     @Transactional
     public List<Vehicle> getVehicles(){
