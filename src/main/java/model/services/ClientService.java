@@ -4,6 +4,7 @@ import model.dtos.ClientCreateDTO;
 import model.dtos.ClientUpdateDTO;
 import model.entities.Client;
 import model.entities.Vehicle;
+import model.exception.ResourceNotFoundException;
 import model.exception.ServiceException;
 import model.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,13 +96,13 @@ public class ClientService {
     public Client findClientByCpf(String cpf){
         validateCPF(cpf);
         Optional<Client> client = clientRepository.findByCpf(cpf);
-        return client.orElseThrow(() -> new ServiceException("Cliente não encontrado"));
+        return client.orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }
     @Transactional
     public Client findClientById(Long clientId){
         validateID(clientId);
         Optional<Client> client = clientRepository.findById(clientId);
-        return client.orElseThrow(() -> new ServiceException("Cliente não encontrado"));
+        return client.orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }
     @Transactional
     public Collection<Vehicle> getVehiclesByClient(Long clientId){

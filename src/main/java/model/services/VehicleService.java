@@ -5,6 +5,7 @@ import model.dtos.VehicleUpdateDTO;
 import model.entities.Client;
 import model.entities.ServiceOrder;
 import model.entities.Vehicle;
+import model.exception.ResourceNotFoundException;
 import model.exception.ServiceException;
 import model.repositories.ServiceOrderRepository;
 import model.repositories.VehicleRepository;
@@ -105,13 +106,13 @@ public class VehicleService {
     public Vehicle findVehicleById(Long vehicleId){
         validateID(vehicleId);
         Optional<Vehicle> vehicle = vehicleRepository.findById(vehicleId);
-        return vehicle.orElseThrow(() -> new ServiceException("Veículo não encontrado."));
+        return vehicle.orElseThrow(() -> new ResourceNotFoundException("Veículo não encontrado."));
     }
     @Transactional
     public Vehicle findVehicleByPlate(String plate){
         validatePlate(plate);
         Optional<Vehicle> vehicle = vehicleRepository.findByPlate(plate);
-        return vehicle.orElseThrow(() -> new ServiceException("Veículo não encontrado."));
+        return vehicle.orElseThrow(() -> new ResourceNotFoundException("Veículo não encontrado."));
     }
     @Transactional
     public Optional<ServiceOrder> getOrders(Long vehicleId){

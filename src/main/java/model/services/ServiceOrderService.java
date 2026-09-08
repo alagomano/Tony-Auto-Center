@@ -4,6 +4,7 @@ import model.dtos.ServiceItemRequestDTO;
 import model.dtos.ServiceOrderRequestDTO;
 import model.entities.ServiceItem;
 import model.entities.ServiceOrder;
+import model.exception.ResourceNotFoundException;
 import model.exception.ServiceException;
 import model.repositories.ServiceItemRepository;
 import model.repositories.ServiceOrderRepository;
@@ -64,7 +65,7 @@ public class ServiceOrderService {
     public ServiceOrder findServiceOrderById(Long serviceOrderId){
         validateID(serviceOrderId);
         Optional<ServiceOrder> serviceOrder = serviceOrderRepository.findById(serviceOrderId);
-        return serviceOrder.orElseThrow(() -> new ServiceException("Ordem de serviço não encontrada."));
+        return serviceOrder.orElseThrow(() -> new ResourceNotFoundException("Ordem de serviço não encontrada."));
     }
     @Transactional
     public ServiceOrder updateServiceOrder(Long serviceId, ServiceOrderRequestDTO orderRequestDTO){
@@ -92,7 +93,7 @@ public class ServiceOrderService {
         List<ServiceItem> items = order.getItems();
 
         ServiceItem item = items.stream().filter(i -> i.getId().equals(serviceItemId))
-                .findFirst().orElseThrow(() -> new ServiceException("Item não pertence à ordem."));
+                .findFirst().orElseThrow(() -> new ResourceNotFoundException("Item não pertence à ordem."));
         validateServiceItem(item);
 
         return item;
