@@ -99,8 +99,8 @@ public class VehicleService {
     }
     @Transactional
     public void removeVehicle(Long vehicleId){
-        validateID(vehicleId);
-        vehicleRepository.deleteById(vehicleId);
+        Vehicle vehicle = findVehicleById(vehicleId);
+        vehicleRepository.delete(vehicle);
     }
     @Transactional
     public Vehicle findVehicleById(Long vehicleId){

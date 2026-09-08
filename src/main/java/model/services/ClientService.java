@@ -86,11 +86,8 @@ public class ClientService {
     }
     @Transactional
     public void removeClient(Long clientId){
-        validateID(clientId);
-        if(!clientRepository.existsById(clientId)){
-            throw new ServiceException("Cliente não encontrado.");
-        }
-        clientRepository.deleteById(clientId);
+        Client client = findClientById(clientId);
+        clientRepository.delete(client);
     }
     @Transactional
     public Client findClientByCpf(String cpf){

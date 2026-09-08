@@ -79,9 +79,8 @@ public class ServiceOrderService {
     }
     @Transactional
     public void deleteServiceOrderById(Long serviceOrderId){
-        validateID(serviceOrderId);
-        findServiceOrderById(serviceOrderId);
-        serviceOrderRepository.deleteById(serviceOrderId);
+        ServiceOrder order = findServiceOrderById(serviceOrderId);
+        serviceOrderRepository.delete(order);
     }
     @Transactional
     public ServiceItem findServiceItemById(Long serviceOrderId, Long serviceItemId){
