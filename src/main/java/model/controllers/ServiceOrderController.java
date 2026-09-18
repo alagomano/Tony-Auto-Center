@@ -9,7 +9,9 @@ import model.exception.ServiceException;
 import model.services.ServiceOrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -67,7 +69,9 @@ public class ServiceOrderController {
     @PostMapping("/{orderId}/items")
     public ResponseEntity<ServiceItem> insertItemToOrder(@PathVariable Long orderId, @RequestBody ServiceItemRequestDTO itemDTO){
         ServiceItem item = serviceOrderService.addItemToOrder(orderId, itemDTO);
-        return ResponseEntity.ok().body(item);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{itemId}").buildAndExpand(item.getId()).toUri();
+        return ResponseEntity.created(uri).body(item);
     }
 
     @PutMapping("/{orderId}/items/{itemId}")
